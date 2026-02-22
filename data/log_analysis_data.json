@@ -1,0 +1,26 @@
+{
+  "ai_cache": {},
+  "settings": {
+    "dashboard_url": "http://localhost:8502"
+  },
+  "collected_logs": [
+    {
+      "log_hash": "a7b96865e38e43c1552e14beb92f8223",
+      "timestamp": "2026-02-22 16:12:40",
+      "source": "Local-Agent",
+      "message": "METRIC | CPU: 7.9% | Memory: 85.8% | Disk: 69.7%",
+      "ingested_at": "2026-02-22 16:12:41"
+    },
+    {
+      "log_hash": "8775b15dda53199764ef5d8e9b2f10c6",
+      "timestamp": "2026-02-22 16:12:41",
+      "source": "Synthetic-Monitor",
+      "message": "SYNTHETIC | Check: Google | URL: https://www.google.com | Status: SUCCESS (200) | Duration: 425ms",
+      "ingested_at": "2026-02-22 16:12:41"
+    }
+  ],
+  "metric_definitions": {},
+  "metric_values": [],
+  "rum_events": [],
+  "metric_id_counter": 1
+}

@@ -1,0 +1,410 @@
+2026-02-22 10:31:20 - INFO - --- Watchdog de Observabilidade (IA Proativa) ---
+2026-02-22 10:31:20 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 10:31:21 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 10:31:21 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 10:31:21 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 10:31:22 - INFO - Ciclo concluído com sucesso.
+2026-02-22 10:32:40 - INFO - Recebido sinal de parada (2). Salvando dados em disco...
+2026-02-22 10:32:40 - INFO - Dados salvos. Encerrando Scheduler.
+2026-02-22 10:32:44 - INFO - --- Watchdog de Observabilidade (IA Proativa) ---
+2026-02-22 10:32:44 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 10:32:45 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 10:32:45 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 10:32:45 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 10:32:47 - ERROR - CRITICAL: O processo log_collector.py não foi encontrado!
+2026-02-22 10:32:47 - INFO - 🔄 Tentando reiniciar o log_collector.py automaticamente...
+2026-02-22 10:32:47 - INFO - Ciclo concluído com sucesso.
+2026-02-22 10:33:05 - INFO - Recebido sinal de parada (2). Salvando dados em disco...
+2026-02-22 10:33:05 - INFO - Dados salvos. Encerrando Scheduler.
+2026-02-22 10:33:09 - INFO - --- Watchdog de Observabilidade (IA Proativa) ---
+2026-02-22 10:33:09 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 10:33:10 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 10:33:10 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 10:33:10 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 10:33:11 - INFO - Ciclo concluído com sucesso.
+2026-02-22 10:38:12 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 10:38:13 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 10:38:13 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 10:38:13 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 10:38:14 - INFO - Ciclo concluído com sucesso.
+2026-02-22 10:43:14 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 10:43:15 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 10:43:15 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 10:43:15 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 10:43:17 - INFO - Ciclo concluído com sucesso.
+2026-02-22 10:48:17 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 10:48:18 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 10:48:18 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 10:48:18 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 10:48:20 - INFO - Ciclo concluído com sucesso.
+2026-02-22 10:51:01 - INFO - Recebido sinal de parada (2). Salvando dados em disco...
+2026-02-22 10:51:01 - INFO - Dados salvos. Encerrando Scheduler.
+2026-02-22 10:51:05 - INFO - --- Watchdog de Observabilidade (IA Proativa) ---
+2026-02-22 10:51:05 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 10:51:06 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 10:51:06 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 10:51:06 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 10:51:09 - INFO - Ciclo concluído com sucesso.
+2026-02-22 10:56:09 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 10:56:10 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 10:56:10 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 10:56:10 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 10:56:12 - INFO - Ciclo concluído com sucesso.
+2026-02-22 11:01:12 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 11:01:13 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 11:01:13 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 11:01:13 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 11:01:15 - INFO - Ciclo concluído com sucesso.
+2026-02-22 11:06:15 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 11:06:16 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 11:06:16 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 11:06:16 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 11:06:18 - INFO - Ciclo concluído com sucesso.
+2026-02-22 11:11:18 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 11:11:19 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 11:11:19 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 11:11:19 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 11:11:21 - INFO - Ciclo concluído com sucesso.
+2026-02-22 11:16:21 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 11:16:22 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 11:16:22 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 11:16:22 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 11:16:23 - INFO - Ciclo concluído com sucesso.
+2026-02-22 11:21:23 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 11:21:24 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 11:21:24 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 11:21:24 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 11:21:26 - INFO - Ciclo concluído com sucesso.
+2026-02-22 11:26:26 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 11:26:27 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 11:26:27 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 11:26:27 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 11:26:29 - INFO - Ciclo concluído com sucesso.
+2026-02-22 11:31:29 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 11:31:30 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 11:31:30 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 11:31:30 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 11:31:32 - INFO - Ciclo concluído com sucesso.
+2026-02-22 11:36:32 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 11:36:33 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 11:36:33 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 11:36:33 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 11:36:35 - INFO - Ciclo concluído com sucesso.
+2026-02-22 11:39:17 - INFO - Recebido sinal de parada (2). Salvando dados em disco...
+2026-02-22 11:39:17 - INFO - Dados salvos. Encerrando Scheduler.
+2026-02-22 11:39:20 - INFO - --- Watchdog de Observabilidade (IA Proativa) ---
+2026-02-22 11:39:20 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 11:39:21 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 11:39:21 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 11:39:21 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 11:39:22 - INFO - Ciclo concluído com sucesso.
+2026-02-22 11:44:22 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 11:44:23 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 11:44:23 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 11:44:23 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 11:44:24 - INFO - Ciclo concluído com sucesso.
+2026-02-22 11:49:24 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 11:49:25 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 11:49:25 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 11:49:25 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 11:49:26 - INFO - Ciclo concluído com sucesso.
+2026-02-22 11:54:26 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 11:54:27 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 11:54:27 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 11:54:27 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 11:54:28 - INFO - Ciclo concluído com sucesso.
+2026-02-22 11:59:28 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 11:59:29 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 11:59:29 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 11:59:29 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 11:59:30 - INFO - Ciclo concluído com sucesso.
+2026-02-22 12:04:30 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 12:04:31 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 12:04:31 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 12:04:31 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 12:04:32 - INFO - Ciclo concluído com sucesso.
+2026-02-22 12:09:32 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 12:09:33 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 12:09:33 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 12:09:33 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 12:09:34 - INFO - Ciclo concluído com sucesso.
+2026-02-22 12:14:34 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 12:14:35 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 12:14:35 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 12:14:35 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 12:14:36 - INFO - Ciclo concluído com sucesso.
+2026-02-22 12:19:36 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 12:19:37 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 12:19:37 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 12:19:37 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 12:19:38 - INFO - Ciclo concluído com sucesso.
+2026-02-22 12:24:38 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 12:24:39 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 12:24:39 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 12:24:39 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 12:24:40 - INFO - Ciclo concluído com sucesso.
+2026-02-22 12:29:40 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 12:29:41 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 12:29:41 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 12:29:41 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 12:29:42 - INFO - Ciclo concluído com sucesso.
+2026-02-22 12:34:42 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 12:34:43 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 12:34:43 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 12:34:43 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 12:34:44 - INFO - Ciclo concluído com sucesso.
+2026-02-22 12:39:44 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 12:39:45 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 12:39:45 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 12:39:45 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 12:39:46 - INFO - Ciclo concluído com sucesso.
+2026-02-22 12:44:46 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 12:44:47 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 12:44:47 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 12:44:47 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 12:44:48 - INFO - Ciclo concluído com sucesso.
+2026-02-22 12:49:48 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 12:49:49 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 12:49:49 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 12:49:49 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 12:49:50 - INFO - Ciclo concluído com sucesso.
+2026-02-22 12:54:50 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 12:54:51 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 12:54:51 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 12:54:51 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 12:54:52 - INFO - Ciclo concluído com sucesso.
+2026-02-22 12:59:52 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 12:59:53 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 12:59:53 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 12:59:53 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 12:59:54 - INFO - Ciclo concluído com sucesso.
+2026-02-22 13:04:54 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 13:04:55 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 13:04:55 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 13:04:55 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 13:04:56 - INFO - Ciclo concluído com sucesso.
+2026-02-22 13:09:56 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 13:09:57 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 13:09:57 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 13:09:57 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 13:09:58 - INFO - Ciclo concluído com sucesso.
+2026-02-22 13:14:58 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 13:14:59 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 13:14:59 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 13:14:59 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 13:15:00 - INFO - Ciclo concluído com sucesso.
+2026-02-22 13:20:00 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 13:20:01 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 13:20:01 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 13:20:01 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 13:20:02 - INFO - Ciclo concluído com sucesso.
+2026-02-22 13:25:02 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 13:25:03 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 13:25:03 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 13:25:03 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 13:25:04 - INFO - Ciclo concluído com sucesso.
+2026-02-22 13:30:04 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 13:30:05 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 13:30:05 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 13:30:05 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 13:30:06 - INFO - Ciclo concluído com sucesso.
+2026-02-22 13:35:06 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 13:35:07 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 13:35:07 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 13:35:07 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 13:35:08 - INFO - Ciclo concluído com sucesso.
+2026-02-22 13:40:08 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 13:40:09 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 13:40:09 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 13:40:09 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 13:40:10 - INFO - Ciclo concluído com sucesso.
+2026-02-22 13:45:10 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 13:45:11 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 13:45:11 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 13:45:11 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 13:45:12 - INFO - Ciclo concluído com sucesso.
+2026-02-22 13:50:12 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 13:50:13 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 13:50:13 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 13:50:13 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 13:50:14 - INFO - Ciclo concluído com sucesso.
+2026-02-22 13:55:14 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 13:55:15 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 13:55:15 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 13:55:15 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 13:55:16 - INFO - Ciclo concluído com sucesso.
+2026-02-22 14:00:16 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 14:00:17 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 14:00:17 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 14:00:17 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 14:00:18 - INFO - Ciclo concluído com sucesso.
+2026-02-22 14:05:18 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 14:05:19 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 14:05:19 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 14:05:19 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 14:05:20 - INFO - Ciclo concluído com sucesso.
+2026-02-22 14:10:20 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 14:10:21 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 14:10:21 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 14:10:21 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 14:10:21 - INFO - Ciclo concluído com sucesso.
+2026-02-22 14:15:21 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 14:15:22 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 14:15:22 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 14:15:22 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 14:15:23 - INFO - Ciclo concluído com sucesso.
+2026-02-22 14:20:23 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 14:20:24 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 14:20:24 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 14:20:24 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 14:20:25 - INFO - Ciclo concluído com sucesso.
+2026-02-22 14:25:25 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 14:25:26 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 14:25:26 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 14:25:26 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 14:25:27 - INFO - Ciclo concluído com sucesso.
+2026-02-22 14:30:27 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 14:30:28 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 14:30:28 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 14:30:28 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 14:30:29 - INFO - Ciclo concluído com sucesso.
+2026-02-22 14:35:29 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 14:35:30 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 14:35:30 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 14:35:30 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 14:35:31 - INFO - Ciclo concluído com sucesso.
+2026-02-22 14:40:31 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 14:40:32 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 14:40:32 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 14:40:32 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 14:40:33 - INFO - Ciclo concluído com sucesso.
+2026-02-22 14:45:33 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 14:45:34 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 14:45:34 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 14:45:34 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 14:45:35 - INFO - Ciclo concluído com sucesso.
+2026-02-22 14:50:35 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 14:50:36 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 14:50:36 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 14:50:36 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 14:50:37 - INFO - Ciclo concluído com sucesso.
+2026-02-22 14:55:37 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 14:55:38 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 14:55:38 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 14:55:38 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 14:55:39 - INFO - Ciclo concluído com sucesso.
+2026-02-22 15:00:39 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 15:00:40 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 15:00:40 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 15:00:40 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 15:00:41 - INFO - Ciclo concluído com sucesso.
+2026-02-22 15:05:41 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 15:05:42 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 15:05:42 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 15:05:42 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 15:05:43 - INFO - Ciclo concluído com sucesso.
+2026-02-22 15:10:43 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 15:10:44 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 15:10:44 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 15:10:44 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 15:10:45 - INFO - Ciclo concluído com sucesso.
+2026-02-22 15:15:45 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 15:15:46 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 15:15:46 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 15:15:46 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 15:15:47 - INFO - Ciclo concluído com sucesso.
+2026-02-22 15:20:47 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 15:20:48 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 15:20:48 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 15:20:48 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 15:20:49 - INFO - Ciclo concluído com sucesso.
+2026-02-22 15:25:49 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 15:25:50 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 15:25:50 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 15:25:50 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 15:25:51 - INFO - Ciclo concluído com sucesso.
+2026-02-22 15:30:51 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 15:30:52 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 15:30:52 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 15:30:52 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 15:30:52 - INFO - Ciclo concluído com sucesso.
+2026-02-22 15:35:52 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 15:35:53 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 15:35:53 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 15:35:53 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 15:35:54 - INFO - Ciclo concluído com sucesso.
+2026-02-22 15:40:54 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 15:40:56 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 15:40:56 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 15:40:56 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 15:40:56 - INFO - Ciclo concluído com sucesso.
+2026-02-22 15:45:56 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 15:45:58 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 15:45:58 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 15:45:58 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 15:45:58 - INFO - Ciclo concluído com sucesso.
+2026-02-22 15:50:58 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 15:50:59 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 15:50:59 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 15:50:59 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 15:51:00 - INFO - Ciclo concluído com sucesso.
+2026-02-22 15:56:00 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 15:56:01 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 15:56:01 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 15:56:01 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 15:56:02 - INFO - Ciclo concluído com sucesso.
+2026-02-22 15:59:24 - INFO - Recebido sinal de parada (2). Salvando dados em disco...
+2026-02-22 15:59:24 - INFO - Dados salvos. Encerrando Scheduler.
+2026-02-22 15:59:27 - INFO - --- Watchdog de Observabilidade (IA Proativa) ---
+2026-02-22 15:59:27 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 15:59:28 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 15:59:28 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 15:59:28 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 15:59:29 - INFO - Ciclo concluído com sucesso.
+2026-02-22 16:02:49 - INFO - Recebido sinal de parada (2). Salvando dados em disco...
+2026-02-22 16:02:49 - INFO - Dados salvos. Encerrando Scheduler.
+2026-02-22 16:04:25 - INFO - --- Watchdog de Observabilidade (IA Proativa) ---
+2026-02-22 16:04:25 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 16:04:26 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 16:04:26 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 16:04:26 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 16:04:27 - INFO - Ciclo concluído com sucesso.
+2026-02-22 16:04:43 - INFO - Recebido sinal de parada (2). Salvando dados em disco...
+2026-02-22 16:04:43 - INFO - Dados salvos. Encerrando Scheduler.
+2026-02-22 16:04:46 - INFO - --- Watchdog de Observabilidade (IA Proativa) ---
+2026-02-22 16:04:46 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 16:04:47 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 16:04:47 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 16:04:47 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 16:04:48 - INFO - Ciclo concluído com sucesso.
+2026-02-22 16:05:17 - INFO - Recebido sinal de parada (2). Salvando dados em disco...
+2026-02-22 16:05:17 - INFO - Dados salvos. Encerrando Scheduler.
+2026-02-22 16:05:20 - INFO - --- Watchdog de Observabilidade (IA Proativa) ---
+2026-02-22 16:05:20 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 16:05:21 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 16:05:21 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 16:05:21 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 16:05:23 - INFO - Ciclo concluído com sucesso.
+2026-02-22 16:05:39 - INFO - Recebido sinal de parada (2). Salvando dados em disco...
+2026-02-22 16:05:39 - INFO - Dados salvos. Encerrando Scheduler.
+2026-02-22 16:05:42 - INFO - --- Watchdog de Observabilidade (IA Proativa) ---
+2026-02-22 16:05:42 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 16:05:43 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 16:05:43 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 16:05:43 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 16:05:45 - INFO - Ciclo concluído com sucesso.
+2026-02-22 16:06:03 - INFO - Recebido sinal de parada (2). Salvando dados em disco...
+2026-02-22 16:06:03 - INFO - Dados salvos. Encerrando Scheduler.
+2026-02-22 16:07:38 - INFO - --- Watchdog de Observabilidade (IA Proativa) ---
+2026-02-22 16:07:38 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 16:07:39 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 16:07:39 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 16:07:39 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 16:07:40 - INFO - Ciclo concluído com sucesso.
+2026-02-22 16:12:40 - INFO - Iniciando Ciclo de Rastreamento...
+2026-02-22 16:12:41 - WARNING - Aviso: URL do Webhook não configurada. Alertas não serão enviados.
+2026-02-22 16:12:41 - INFO - Watchdog ignorado (URL do Graylog não configurada).
+2026-02-22 16:12:41 - INFO - Nenhum log crítico encontrado neste ciclo. (Query: (message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]))
+2026-02-22 16:12:42 - INFO - Ciclo concluído com sucesso.
+2026-02-22 16:16:44 - INFO - Recebido sinal de parada (2). Salvando dados em disco...
+2026-02-22 16:16:44 - INFO - Dados salvos. Encerrando Scheduler.

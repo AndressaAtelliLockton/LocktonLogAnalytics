@@ -1,0 +1,31 @@
+{
+  "categories": [
+    {
+      "name": "Aplicação (erro/exceção)",
+      "keywords": ["fail:", "error", "critical", "exception", "stacktrace", "unhandled"],
+      "log_levels": ["error", "critical", "fail"]
+    },
+    {
+      "name": "Performance/latência",
+      "keywords": ["after", "ms", "slow query", "timeout", "duration", "took"]
+    },
+    {
+      "name": "Acesso/Rede",
+      "keywords": ["http request", "signalr", "httpclient", "endpoint", "api/survey"],
+      "log_levels": ["info"]
+    },
+    {
+      "name": "Segurança",
+      "keywords": ["security", "auth", "401", "403", "forbidden", "unauthorized", "login attempt", "invalid token"]
+    },
+    {
+      "name": "Banco de Dados/Integridade",
+      "keywords": ["sql server", "entity framework", "deadlock", "dbupdateexception", "constraint", "foreign key"],
+      "log_levels": ["error"]
+    },
+    {
+      "name": "Auditoria/Processos",
+      "keywords": ["audit", "modified by", "created by", "hangfire", "background job", "integration"]
+    }
+  ]
+}
