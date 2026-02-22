@@ -1,0 +1,14 @@
+[server]
+headless = true
+address = "0.0.0.0"
+port = 8051
+enableCORS = false
+enableXsrfProtection = false
+
+[browser]
+serverAddress = "10.130.0.20"
+serverPort = 8051
+gatherUsageStats = false
+
+[client]
+showSidebarNavigation = false

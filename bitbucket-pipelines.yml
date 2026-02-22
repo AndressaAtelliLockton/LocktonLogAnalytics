@@ -1,0 +1,124 @@
+﻿clone:
+    lfs: true
+
+image:
+  name: dckr-reg.lockton.com.br/builderimage:main
+  username: $REG_USER
+  password: $REG_P
+
+definitions:
+  services:
+    docker:
+      memory: 3072
+
+pipelines:
+    pull-requests: # Apenas valida se o merge e a build vão funcionar.
+        '**':
+            - step:
+                name: Build Test Only
+                runs-on: locktonbrasilrunner
+                script:
+                    - export BITBUCKET_COMMIT_SHORT="${BITBUCKET_COMMIT::7}"
+                    - sed -i 's|YYZ|'$BITBUCKET_COMMIT_SHORT'|g' Dockerfile
+                    - docker build -t dckr-reg.lockton.com.br/$PROJECT_NAME:$BITBUCKET_COMMIT_SHORT --build-arg ENV=dev .
+                services:
+                    - docker
+    branches:
+        master:
+            - step:
+                name: Publish Development
+                deployment: test
+                runs-on: locktonbrasilrunner
+                script:
+                    - export BITBUCKET_COMMIT_SHORT="${BITBUCKET_COMMIT::7}"
+                    - sed -i 's|YYZ|'$BITBUCKET_COMMIT_SHORT'|g' Dockerfile
+                    - IMAGE_TAG=$(/builderbin/gettag.sh "$BITBUCKET_BRANCH" "$BITBUCKET_COMMIT" "main")
+                    - echo "$REG_P" | docker login dckr-reg.lockton.com.br --username $REG_USER --password-stdin
+                    - docker build -t dckr-reg.lockton.com.br/$PROJECT_NAME:$IMAGE_TAG --build-arg ENV=dev .
+                    - docker push dckr-reg.lockton.com.br/$PROJECT_NAME:$IMAGE_TAG
+                    - ansible dockerswarm3dev -i /ansibledefs/hosts -a "docker login dckr-reg.lockton.com.br --username $REG_USER --password $REG_P"
+                    - ansible dockerswarm3dev -i /ansibledefs/hosts -a "docker service update --with-registry-auth --env-add INFLUXDB_URL=$INFLUXDB_URL --env-add DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=$DOCKER_INFLUXDB_INIT_ADMIN_TOKEN --env-add DOCKER_INFLUXDB_INIT_ORG=$DOCKER_INFLUXDB_INIT_ORG --env-add DOCKER_INFLUXDB_INIT_BUCKET=$DOCKER_INFLUXDB_INIT_BUCKET --env-add GROQ_API_KEY=$GROQ_API_KEY --env-add JIRA_WEBHOOK_URL=$JIRA_WEBHOOK_URL --env-add JIRA_API_KEY=$JIRA_API_KEY --env-add GRAYLOG_API_URL=$GRAYLOG_API_URL --env-add GRAYLOG_USER=$GRAYLOG_USER --env-add GRAYLOG_PASSWORD=$GRAYLOG_PASSWORD --env-add TEAMS_WEBHOOK_URL=$TEAMS_WEBHOOK_URL --env-add DASHBOARD_URL=$DASHBOARD_URL --image dckr-reg.lockton.com.br/$PROJECT_NAME:$IMAGE_TAG $PROJECT_NAME-development"
+                services:
+                    - docker
+        staging:
+            - step:
+                name: Publish Staging
+                deployment: staging
+                runs-on: locktonbrasilrunner
+                script:
+                    - export BITBUCKET_COMMIT_SHORT="${BITBUCKET_COMMIT::7}"
+                    - sed -i 's|YYZ|'$BITBUCKET_COMMIT_SHORT'|g' Dockerfile
+                    - IMAGE_TAG=$(/builderbin/gettag.sh "$BITBUCKET_BRANCH" "$BITBUCKET_COMMIT" "staging")
+                    - echo "$REG_P" | docker login dckr-reg.lockton.com.br --username $REG_USER --password-stdin
+                    - docker build -t dckr-reg.lockton.com.br/$PROJECT_NAME:$IMAGE_TAG --build-arg ENV=homolog .
+                    - docker push dckr-reg.lockton.com.br/$PROJECT_NAME:$IMAGE_TAG
+                    - ansible dockerswarm1hom -i /ansibledefs/hosts -a "docker login dckr-reg.lockton.com.br --username $REG_USER --password $REG_P"
+                    - ansible dockerswarm1hom -i /ansibledefs/hosts -a "docker service update --with-registry-auth --env-add INFLUXDB_URL=$INFLUXDB_URL --env-add DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=$DOCKER_INFLUXDB_INIT_ADMIN_TOKEN --env-add DOCKER_INFLUXDB_INIT_ORG=$DOCKER_INFLUXDB_INIT_ORG --env-add DOCKER_INFLUXDB_INIT_BUCKET=$DOCKER_INFLUXDB_INIT_BUCKET --env-add GROQ_API_KEY=$GROQ_API_KEY --env-add JIRA_WEBHOOK_URL=$JIRA_WEBHOOK_URL --env-add JIRA_API_KEY=$JIRA_API_KEY --env-add GRAYLOG_API_URL=$GRAYLOG_API_URL --env-add GRAYLOG_USER=$GRAYLOG_USER --env-add GRAYLOG_PASSWORD=$GRAYLOG_PASSWORD --env-add TEAMS_WEBHOOK_URL=$TEAMS_WEBHOOK_URL --env-add DASHBOARD_URL=$DASHBOARD_URL --image dckr-reg.lockton.com.br/$PROJECT_NAME:$IMAGE_TAG $PROJECT_NAME-staging"
+                services:
+                    - docker
+    custom:
+        publishproduction:
+            - step:
+                name: Publish Production
+                deployment: production
+                runs-on: locktonbrasilrunner
+                script:
+                    - export BITBUCKET_COMMIT_SHORT="${BITBUCKET_COMMIT::7}"
+                    - sed -i 's|YYZ|'$BITBUCKET_COMMIT_SHORT'|g' Dockerfile
+                    - IMAGE_TAG=$(/builderbin/gettag.sh "$BITBUCKET_BRANCH" "$BITBUCKET_COMMIT" "production")
+                    - echo "$REG_P" | docker login dckr-reg.lockton.com.br --username $REG_USER --password-stdin
+                    - docker build -t dckr-reg.lockton.com.br/$PROJECT_NAME:$IMAGE_TAG --build-arg ENV=prod .
+                    - docker push dckr-reg.lockton.com.br/$PROJECT_NAME:$IMAGE_TAG
+                    - ansible dockerswarm4svc -i /ansibledefs/hosts -a "docker login dckr-reg.lockton.com.br --username $REG_USER --password $REG_P"
+                    - ansible dockerswarm4svc -i /ansibledefs/hosts -a "docker service update --with-registry-auth --env-add INFLUXDB_URL=$INFLUXDB_URL --env-add DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=$DOCKER_INFLUXDB_INIT_ADMIN_TOKEN --env-add DOCKER_INFLUXDB_INIT_ORG=$DOCKER_INFLUXDB_INIT_ORG --env-add DOCKER_INFLUXDB_INIT_BUCKET=$DOCKER_INFLUXDB_INIT_BUCKET --env-add GROQ_API_KEY=$GROQ_API_KEY --env-add JIRA_WEBHOOK_URL=$JIRA_WEBHOOK_URL --env-add JIRA_API_KEY=$JIRA_API_KEY --env-add GRAYLOG_API_URL=$GRAYLOG_API_URL --env-add GRAYLOG_USER=$GRAYLOG_USER --env-add GRAYLOG_PASSWORD=$GRAYLOG_PASSWORD --env-add TEAMS_WEBHOOK_URL=$TEAMS_WEBHOOK_URL --env-add DASHBOARD_URL=$DASHBOARD_URL --image dckr-reg.lockton.com.br/$PROJECT_NAME:$IMAGE_TAG $PROJECT_NAME"
+                services:
+                    - docker
+        createdev:
+            - step:
+                name: Create Dev Container
+                deployment: test
+                runs-on: locktonbrasilrunner
+                script:
+                    - export BITBUCKET_COMMIT_SHORT="${BITBUCKET_COMMIT::7}"
+                    - sed -i 's|YYZ|'$BITBUCKET_COMMIT_SHORT'|g' Dockerfile
+                    - IMAGE_TAG=$(/builderbin/gettag.sh "$BITBUCKET_BRANCH" "$BITBUCKET_COMMIT" "main")
+                    - echo "$REG_P" | docker login dckr-reg.lockton.com.br --username $REG_USER --password-stdin
+                    - docker build -t dckr-reg.lockton.com.br/$PROJECT_NAME:$IMAGE_TAG --build-arg ENV=dev .
+                    - docker push dckr-reg.lockton.com.br/$PROJECT_NAME:$IMAGE_TAG
+                    - ansible dockerswarm3dev -i /ansibledefs/hosts -a "docker login dckr-reg.lockton.com.br --username $REG_USER --password $REG_P"
+                    - ansible dockerswarm3dev -i /ansibledefs/hosts -a "docker service create -d --publish target=80,published=$PROJECT_PORT --log-driver=gelf --log-opt gelf-address=udp://logserver.lockton.com.br:12201 --log-opt tag=$PROJECT_NAME-development --with-registry-auth --env INFLUXDB_URL=$INFLUXDB_URL --env DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=$DOCKER_INFLUXDB_INIT_ADMIN_TOKEN --env DOCKER_INFLUXDB_INIT_ORG=$DOCKER_INFLUXDB_INIT_ORG --env DOCKER_INFLUXDB_INIT_BUCKET=$DOCKER_INFLUXDB_INIT_BUCKET --env GROQ_API_KEY=$GROQ_API_KEY --env JIRA_WEBHOOK_URL=$JIRA_WEBHOOK_URL --env JIRA_API_KEY=$JIRA_API_KEY --env GRAYLOG_API_URL=$GRAYLOG_API_URL --env GRAYLOG_USER=$GRAYLOG_USER --env GRAYLOG_PASSWORD=$GRAYLOG_PASSWORD --env TEAMS_WEBHOOK_URL=$TEAMS_WEBHOOK_URL --env DASHBOARD_URL=$DASHBOARD_URL --name $PROJECT_NAME-development dckr-reg.lockton.com.br/$PROJECT_NAME:$IMAGE_TAG"
+                services:
+                    - docker
+        createstaging:
+            - step:
+                name: Create Staging Container
+                deployment: staging
+                runs-on: locktonbrasilrunner
+                script:
+                    - export BITBUCKET_COMMIT_SHORT="${BITBUCKET_COMMIT::7}"
+                    - sed -i 's|YYZ|'$BITBUCKET_COMMIT_SHORT'|g' Dockerfile
+                    - IMAGE_TAG=$(/builderbin/gettag.sh "$BITBUCKET_BRANCH" "$BITBUCKET_COMMIT" "staging")
+                    - echo "$REG_P" | docker login dckr-reg.lockton.com.br --username $REG_USER --password-stdin
+                    - docker build -t dckr-reg.lockton.com.br/$PROJECT_NAME:$IMAGE_TAG --build-arg ENV=homolog .
+                    - docker push dckr-reg.lockton.com.br/$PROJECT_NAME:$IMAGE_TAG
+                    - ansible dockerswarm1hom -i /ansibledefs/hosts -a "docker login dckr-reg.lockton.com.br --username $REG_USER --password $REG_P"
+                    - ansible dockerswarm1hom -i /ansibledefs/hosts -a "docker service create -d --publish target=80,published=$PROJECT_PORT --log-driver=gelf --log-opt gelf-address=udp://logserver.lockton.com.br:12201 --log-opt tag=$PROJECT_NAME-staging --with-registry-auth --env INFLUXDB_URL=$INFLUXDB_URL --env DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=$DOCKER_INFLUXDB_INIT_ADMIN_TOKEN --env DOCKER_INFLUXDB_INIT_ORG=$DOCKER_INFLUXDB_INIT_ORG --env DOCKER_INFLUXDB_INIT_BUCKET=$DOCKER_INFLUXDB_INIT_BUCKET --env GROQ_API_KEY=$GROQ_API_KEY --env JIRA_WEBHOOK_URL=$JIRA_WEBHOOK_URL --env JIRA_API_KEY=$JIRA_API_KEY --env GRAYLOG_API_URL=$GRAYLOG_API_URL --env GRAYLOG_USER=$GRAYLOG_USER --env GRAYLOG_PASSWORD=$GRAYLOG_PASSWORD --env TEAMS_WEBHOOK_URL=$TEAMS_WEBHOOK_URL --env DASHBOARD_URL=$DASHBOARD_URL --name $PROJECT_NAME-staging dckr-reg.lockton.com.br/$PROJECT_NAME:$IMAGE_TAG"
+                services:
+                    - docker
+        createproduction:
+            - step:
+                name: Create Production Container
+                deployment: production
+                runs-on: locktonbrasilrunner
+                script:
+                    - export BITBUCKET_COMMIT_SHORT="${BITBUCKET_COMMIT::7}"
+                    - sed -i 's|YYZ|'$BITBUCKET_COMMIT_SHORT'|g' Dockerfile
+                    - IMAGE_TAG=$(/builderbin/gettag.sh "$BITBUCKET_BRANCH" "$BITBUCKET_COMMIT" "production")
+                    - echo "$REG_P" | docker login dckr-reg.lockton.com.br --username $REG_USER --password-stdin
+                    - docker build -t dckr-reg.lockton.com.br/$PROJECT_NAME:$IMAGE_TAG --build-arg ENV=prod .
+                    - docker push dckr-reg.lockton.com.br/$PROJECT_NAME:$IMAGE_TAG
+                    - ansible dockerswarm4svc -i /ansibledefs/hosts -a "docker login dckr-reg.lockton.com.br --username $REG_USER --password $REG_P"
+                    - ansible dockerswarm4svc -i /ansibledefs/hosts -a "docker service create -d --publish target=80,published=$PROJECT_PORT --log-driver=gelf --log-opt gelf-address=udp://logserver.lockton.com.br:12201 --log-opt tag=$PROJECT_NAME --with-registry-auth --env INFLUXDB_URL=$INFLUXDB_URL --env DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=$DOCKER_INFLUXDB_INIT_ADMIN_TOKEN --env DOCKER_INFLUXDB_INIT_ORG=$DOCKER_INFLUXDB_INIT_ORG --env DOCKER_INFLUXDB_INIT_BUCKET=$DOCKER_INFLUXDB_INIT_BUCKET --env GROQ_API_KEY=$GROQ_API_KEY --env JIRA_WEBHOOK_URL=$JIRA_WEBHOOK_URL --env JIRA_API_KEY=$JIRA_API_KEY --env GRAYLOG_API_URL=$GRAYLOG_API_URL --env GRAYLOG_USER=$GRAYLOG_USER --env GRAYLOG_PASSWORD=$GRAYLOG_PASSWORD --env TEAMS_WEBHOOK_URL=$TEAMS_WEBHOOK_URL --env DASHBOARD_URL=$DASHBOARD_URL --name $PROJECT_NAME dckr-reg.lockton.com.br/$PROJECT_NAME:$IMAGE_TAG"
+                services:
+                    - docker
+            
