@@ -54,7 +54,6 @@ The system is built on a modern, containerized stack:
 
 - **Frontend:** Streamlit (Python) for interactive dashboards.
 - **Backend:** FastAPI (Python) for high-performance API and WebSocket handling.
-- **Proxy:** Nginx for robust routing and WebSocket management.
 - **AI Engine:** Groq API (Llama 3) for cognitive tasks.
 - **Data Sources:** Graylog (API), InfluxDB (Time-series), and CSV Uploads.
 
@@ -75,19 +74,47 @@ Ensure Docker Desktop is running.
 ### Option B: Local Development
 Requires Python 3.10+.
 
-1. **Setup Environment:**
+1. **Setup & Run (Terminal):**
+   Open your terminal (Command Prompt or PowerShell) in the project root:
+
    ```bash
-   ./scripts/setup_project.bat
+   # 1. Create and activate virtual environment
+      py -m venv venv
+      .\venv\Scripts\activate
+
+   # 2. Install dependencies
+      pip install -r requirements.txt
+
+   # 3. Run Application
+      cd src
+      py -m uvicorn app:app --reload
    ```
-2. **Configure Secrets:**
-   Edit the `.env` file with your API keys (Groq, Graylog, Teams).
-3. **Run Application:**
-   ```bash
-   ./scripts/run_app.bat
-   ```
-4. **Access:**
+
+2. **Access:**
    Open http://localhost:8000
 
+
+3. **Test Access:**
+   ```bash
+      # 1. Estando dentro da pasta tests/, basta digitar: 
+      # Isso fará o pytest descobrir e rodar todos os testes na pasta automaticamente.
+         pytest
+
+
+      # 2. Se quiser rodar um arquivo específico, coloque o nome dele na frente Ex::
+         pytest test_api_integration.py
+
+      #Arquivos como test_watchdog_real.py e test_teams_webhook.py são ferramentas de linha de comando para você  testar integrações no mundo real.
+      # Para listar as fontes e verificar a conexão
+         python test_watchdog_real.py --list-sources
+
+      # Para rodar o Watchdog valendo
+         python test_watchdog_real.py --source "locksp-swarm" --range 24h
+
+      # Para testar apenas a comunicação com o Microsoft Teams
+         python test_teams_webhook.py
+
+   ```
 ---
 
 ## 📂 Project Structure
@@ -95,7 +122,7 @@ Requires Python 3.10+.
 - `src/`: Application source code (`app.py`, `dashboard.py`, `scheduler.py`, `log_analyzer.py`, `pages/`).
 - `scripts/`: Operational scripts (`setup_project.bat`, `run_app.bat`).
 - `tests/`: Test suites and execution scripts (`run_tests.bat`, `run_docker_test.bat`).
-- `config/`: Configuration files (`nginx.conf`, `config.json`).
+- `config/`: Configuration files (`config.json`).
 - `logs/`: Application logs.
 - `data/`: Local database and data files.
 
