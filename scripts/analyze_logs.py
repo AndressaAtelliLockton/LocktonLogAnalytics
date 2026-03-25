@@ -1,6 +1,11 @@
 import pandas as pd
 import argparse
-import log_analyzer_module as lam
+import sys
+import os
+
+# Adiciona o diretório src ao path para importar log_analyzer
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
+import log_analyzer as lam
 
 def main():
     """

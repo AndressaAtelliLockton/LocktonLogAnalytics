@@ -1,6 +1,7 @@
 import pandas as pd
 import json
 import warnings
+from pydantic import BaseModel
 import os
 from groq import Groq
 import re
@@ -18,16 +19,34 @@ from datetime import datetime
 import socket
 import zlib
 
+try:
+    from log_analyzer_lib import cicd_analysis
+except ImportError:
+    from src.log_analyzer_lib import cicd_analysis
+
+try:
+    from log_analyzer_lib import infra_analysis
+except ImportError:
+    from src.log_analyzer_lib import infra_analysis
+
+# Garante o carregamento das variáveis de ambiente (.env) ao importar este módulo
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
 warnings.filterwarnings("ignore", category=FutureWarning)
 
 # --- Pre-compiled Regex for Performance ---
 IP_PATTERN = re.compile(r'(?<!\d)\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(?!\d)')
-LATENCY_PATTERN = re.compile(r'(?:duration|time|took)[:=]\s*(\d+(?:\.\d+)?)(?:\s*(ms|s|us|µs))?', re.IGNORECASE)
+LATENCY_PATTERN = re.compile(r'\b(?:duration|time|took|latency|elapsed(?:milliseconds)?|in|after)\b(?:["\']?[:=]\s*["\']?|\s+["\']?)(\d+(?:\.\d+)?)(?:["\']|\s+)?(ms|s|sec|min|us|µs)?', re.IGNORECASE)
+LATENCY_PATTERN = re.compile(r'(?:duration|time|took|latency|elapsed(?:milliseconds)?|\bin\b|\bafter\b)(?:["\']?[:=]\s*["\']?|\s+["\']?)(\d+(?:\.\d+)?)(?:["\']|\s+)?(ms|s|sec|min|us|µs)?', re.IGNORECASE)
 CPF_PATTERN = re.compile(r'\d{3}\.\d{3}\.\d{3}-\d{2}')
 EMAIL_PATTERN = re.compile(r'[\w\.-]+@[\w\.-]+\.\w+')
 NUM_PATTERN = re.compile(r'\d+')
 UUID_PATTERN = re.compile(r'([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})', re.IGNORECASE)
-TRACE_ID_PATTERN = re.compile(r'TraceId[:=]\s*([a-f0-9]{32})', re.IGNORECASE) # Suporte a TraceId W3C/.NET (sem traços)
+TRACE_ID_PATTERN = re.compile(r'TraceId["\']?[:=]\s*["\']?([a-f0-9]{32})["\']?', re.IGNORECASE) # Suporte a TraceId W3C/.NET (sem traços) e JSON
 SCHEDULER_STATUS_FILE = "scheduler_status.txt"
 SCHEDULER_PID_FILE = "scheduler.pid"
 URL_PATTERN = re.compile(r'https?://([\w\-\.]+)(?::\d+)?')
@@ -66,13 +85,12 @@ def save_setting(key, value):
 
 def get_setting(key, default=""):
     """Recupera uma configuração do banco de dados."""
-    # Fallback para variáveis de ambiente já que o DB está desativado
-    return os.environ.get(key.upper(), default)
+    # Simplificado: Busca diretamente a variável de ambiente. O padrão é usar nomes em maiúsculas.
+    return os.getenv(key.upper(), default)
 
 def get_secret(key, default=""):
-    """Recupera um segredo (wrapper para get_setting)."""
-    return get_setting(key, default)
-
+    """Recupera um segredo, que é apenas uma variável de ambiente neste contexto."""
+    return os.getenv(key.upper(), default)
 
 def get_db_stats():
     """Retorna estatísticas do banco de dados de cache."""
@@ -412,7 +430,7 @@ def process_log_data(df, config):
     output_cols = ['timestamp', 'source', 'message', 'category', 'log_level', 'message_length']
     
     # Preserva colunas extras se existirem no DF original
-    extra_cols = ['cpu_valor', 'mem_valor', 'container_name', 'image_name', 'RequestPath']
+    extra_cols = ['cpu_valor', 'mem_valor', 'container_name', 'image_name', 'RequestPath', 'streams', 'tag']
     for col in extra_cols:
         if col in df_proc.columns:
             output_cols.append(col)
@@ -454,17 +472,34 @@ def generate_initial_prompt(log_message):
            Gere um exemplo de ticket para o Jira com base nesta análise, formatado em Markdown, contendo:
            - Título (Resumo do erro)
            - Descrição (O que aconteceu, logs, impacto)
+           - Logging Estruturado: Gere o JSON estruturado final para este log. Inclua no json o source. Apresente o JSON formatado e indentado dentro de um bloco de código markdown (```json). Não use a palavra "undefined".
            - Passos para Reprodução (se aplicável)
            - Solução Técnica (Correção a ser aplicada)
            - Prioridade Sugerida
 
-        Se a sua assertividade for menor que 90%, responda apenas: "Baseado no conhecimento atual, como agente de IA, não consigo sugerir uma recomendação que seja eficiente."
-        Se a sua assertividade for entre 90% e 100%, mostre o nivel de assertividade (Ex: "Minha assertividade para esta análise é de 95%") e apresente as recomendações.
+        Se a sua assertividade for menor que 95%, responda apenas: "Baseado no conhecimento atual, como agente de IA, não consigo sugerir uma recomendação que seja eficiente."
+        Se a sua assertividade for entre 95% e 100%, mostre o nivel de assertividade e apresente as recomendações.
         
         IMPORTANTE: Se o usuário disser "encerrar" ou algo similar durante a conversa, responda com um resumo consolidado das ações recomendadas (Imediatas e Longo Prazo) discutidas até agora e finalize a interação de forma cordial.
 
         Responda em Português de forma técnica e clara.
         """
+
+class LogDataForPrompt(BaseModel):
+    """Modelo Pydantic para receber os dados do log do frontend para o prompt."""
+    timestamp: str
+    source: str
+    message: str
+
+def generate_chat_system_prompt(log: LogDataForPrompt) -> str:
+    """Gera o prompt de sistema para o chat da IA com base em um log específico."""
+    return (
+        "Você é um assistente SRE especialista. Analise este log:\n"
+        f"Timestamp: {log.timestamp}\n"
+        f"Source: {log.source}\n"
+        f"Message: {log.message}\n\n"
+        "Responda de forma técnica e clara."
+    )
 
 
 def send_chat_message(messages, model_name='llama-3.3-70b-versatile'):
@@ -499,7 +534,15 @@ def send_webhook_alert(webhook_url, message, title="🚨 Alerta de Log"):
     # Detecta se é Microsoft Teams para usar Card Format (mais bonito e com cor)
     if "outlook.office.com" in webhook_url or "webhook.office.com" in webhook_url:
         payload = {
-            "text": f"**{title}**\n\n{message}"
+            "@type": "MessageCard",
+            "@context": "http://schema.org/extensions",
+            "themeColor": "0076D7",
+            "summary": title,
+            "sections": [{
+                "activityTitle": title,
+                "text": message,
+                "markdown": True
+            }]
         }
     else:
         # Fallback para Slack/Discord (Texto simples)
@@ -534,51 +577,6 @@ def analyze_critical_logs_with_ai(df, model='llama-3.3-70b-versatile'):
         })
         
     return ai_analyses
-
-
-def detect_volume_anomalies(df, time_window='1min', z_score_threshold=3):
-    """
-    Detecta anomalias de volume (picos de logs) usando estatística (Z-Score).
-    Simula funcionalidades de ferramentas de monitoramento.
-    """
-    if 'timestamp' not in df.columns:
-        return pd.DataFrame()
-
-    # Garante datetime
-    temp_df = df.copy()
-    temp_df['timestamp'] = pd.to_datetime(temp_df['timestamp'], errors='coerce')
-    temp_df = temp_df.dropna(subset=['timestamp'])
-    
-    # Resample para contagem por intervalo
-    volume_series = temp_df.set_index('timestamp').resample(time_window).size()
-    
-    # Calcula média móvel e desvio padrão
-    rolling_mean = volume_series.rolling(window=60, min_periods=1).mean()
-    rolling_std = volume_series.rolling(window=60, min_periods=1).std()
-    
-    # Calcula Z-Score (quantos desvios padrão longe da média)
-    z_scores = (volume_series - rolling_mean) / rolling_std
-    
-    # Filtra anomalias
-    anomalies = volume_series[z_scores > z_score_threshold].reset_index(name='count')
-    return anomalies
-
-
-def detect_rare_patterns(df, rarity_threshold=0.01):
-    """
-    Detecta padrões de logs raros (Anomaly Detection de texto).
-    Mascará números e datas para agrupar mensagens similares.
-    """
-    # Vectorized regex replacement is faster
-    df = df.copy()
-    df['pattern_signature'] = df['message'].astype(str).str.replace(NUM_PATTERN, '<NUM>', regex=True).str.slice(0, 100)
-    pattern_counts = df['pattern_signature'].value_counts(normalize=True)
-    
-    # Retorna logs cujos padrões aparecem menos que o threshold (ex: 1%)
-    rare_signatures = pattern_counts[pattern_counts < rarity_threshold].index
-    rare_logs = df[df['pattern_signature'].isin(rare_signatures)].drop(columns=['pattern_signature'])
-    
-    return rare_logs
 
 
 def extract_trace_ids(df):
@@ -620,41 +618,6 @@ def mask_sensitive_data(df):
     series = series.str.replace(IP_PATTERN, '***.***.***.***', regex=True)
     df_masked['message'] = series
     return df_masked
-
-
-def group_incidents(df):
-    """
-    Agrupa incidentes similares para evitar fadiga de alertas (AIOps).
-    Retorna um DataFrame com a contagem de incidentes agrupados.
-    """
-    if df.empty:
-        return pd.DataFrame()
-
-    # 1. Filtra por Nível de Log explícito (Expandido)
-    target_levels = ['Error', 'Fail', 'Critical', 'Fatal']
-    error_df = df[df['log_level'].isin(target_levels)].copy()
-    
-    # 2. Fallback: Se não encontrar por nível, busca por palavras-chave de erro
-    if error_df.empty:
-        keyword_mask = df['message'].astype(str).str.contains(r'error|fail|exception|critical|fatal|timeout|deadlock', case=False, regex=True)
-        error_df = df[keyword_mask].copy()
-        if error_df.empty:
-            return pd.DataFrame()
-
-    # Vectorized signature generation
-    sigs = error_df['message'].astype(str).str.replace(NUM_PATTERN, '<NUM>', regex=True)
-    sigs = sigs.str.replace(UUID_PATTERN, '<UUID>', regex=True)
-    error_df['signature'] = sigs.str.slice(0, 150)
-    
-    grouped = error_df.groupby('signature').agg(
-        count=('timestamp', 'count'),
-        first_seen=('timestamp', 'min'),
-        last_seen=('timestamp', 'max'),
-        example_message=('message', 'first'),
-        sources=('source', lambda x: list(set(x))[:3]) # Top 3 sources
-    ).reset_index()
-    
-    return grouped.sort_values('count', ascending=False)
 
 
 def extract_latency_metrics(df):
@@ -807,78 +770,154 @@ def generate_stack_trace_metrics(df):
 def extract_system_metrics(df):
     """
     Extrai métricas de sistema (CPU, Memória, Disco, Rede) de mensagens de log.
-    Padrões suportados: 'CPU: 50%', 'Memory: 1024MB', 'Disk: 80%', 'Net: 100'
     """
-    metrics_df = df.copy()
-    metrics_df = metrics_df.reset_index(drop=True)
-    
-    # ESTRATÉGIA 1: Usar colunas já existentes (vindas do Graylog/Scheduler)
-    # Se o DataFrame já tem cpu_valor/mem_valor, usamos eles diretamente
-    if 'cpu_valor' in metrics_df.columns and 'mem_valor' in metrics_df.columns:
-        # Renomeia para o padrão interno (cpu, memory)
-        metrics_df['cpu'] = pd.to_numeric(metrics_df['cpu_valor'], errors='coerce')
-        metrics_df['memory'] = pd.to_numeric(metrics_df['mem_valor'], errors='coerce')
-        metrics_df['disk'] = 0.0 # Default se não vier
-        metrics_df['network'] = 0.0
+    if df.empty:
+        return pd.DataFrame()
         
-        # Se tiver dados válidos, retorna (prioridade máxima)
-        if not metrics_df['cpu'].isna().all():
-             return metrics_df[['timestamp', 'source', 'cpu', 'memory', 'disk', 'network']]
-
-    # ESTRATÉGIA 2: Regex no texto (Fallback)
-    # Regex para capturar valores numéricos após chaves comuns (case insensitive)
-    cpu_regex = r'(?:cpu|load|processor)\s*[:=]\s*(\d+(?:\.\d+)?)'
-    mem_regex = r'(?:memory|mem|ram)\s*[:=]\s*(\d+(?:\.\d+)?)'
-    disk_regex = r'(?:disk|storage|hdd)\s*[:=]\s*(\d+(?:\.\d+)?)'
-    net_regex = r'(?:network|net|bw)\s*[:=]\s*(\d+(?:\.\d+)?)'
+    # 1. Extração baseada em Regex (Comportamento legado para texto livre)
+    base_df = infra_analysis.extract_system_metrics(df)
     
-    metrics_df['cpu'] = metrics_df['message'].astype(str).str.extract(cpu_regex, flags=re.IGNORECASE, expand=False).astype(float)
-    metrics_df['memory'] = metrics_df['message'].astype(str).str.extract(mem_regex, flags=re.IGNORECASE, expand=False).astype(float)
-    metrics_df['disk'] = metrics_df['message'].astype(str).str.extract(disk_regex, flags=re.IGNORECASE, expand=False).astype(float)
-    metrics_df['network'] = metrics_df['message'].astype(str).str.extract(net_regex, flags=re.IGNORECASE, expand=False).astype(float)
+    # 2. Extração baseada em colunas estruturadas do Graylog (cpu_valor, mem_valor)
+    structured_df = pd.DataFrame()
+    has_cpu = 'cpu_valor' in df.columns
+    has_mem = 'mem_valor' in df.columns
     
-    # Filtra apenas logs que contêm alguma métrica
-    valid_metrics = metrics_df.dropna(subset=['cpu', 'memory', 'disk', 'network'], how='all')
-    
-    return valid_metrics[['timestamp', 'source', 'cpu', 'memory', 'disk', 'network']]
+    if has_cpu or has_mem:
+        mask = pd.Series(False, index=df.index)
+        if has_cpu:
+            mask = mask | pd.to_numeric(df['cpu_valor'], errors='coerce').notna()
+        if has_mem:
+            mask = mask | pd.to_numeric(df['mem_valor'], errors='coerce').notna()
+            
+        if mask.any():
+            structured_df = df.loc[mask, ['timestamp', 'source']].copy()
+            structured_df['cpu'] = pd.to_numeric(df.loc[mask, 'cpu_valor'] if has_cpu else 0, errors='coerce').fillna(0)
+            structured_df['memory'] = pd.to_numeric(df.loc[mask, 'mem_valor'] if has_mem else 0, errors='coerce').fillna(0)
+            structured_df['disk'] = 0.0 # Disco geralmente não vem estruturado nesses logs
+            
+    # 3. Mescla e unifica os resultados
+    if not structured_df.empty:
+        if not base_df.empty:
+            # Concatena e agrupa tirando o valor máximo para mesclar atributos da mesma linha de log
+            combined = pd.concat([base_df, structured_df], ignore_index=True)
+            for col in ['cpu', 'memory', 'disk']:
+                if col not in combined.columns:
+                    combined[col] = 0.0
+            return combined.groupby(['timestamp', 'source'], as_index=False).max()
+        return structured_df
+        
+    return base_df
 
 
 def extract_api_metrics(df):
     """
-    Extrai métricas de API (Método, Status, Endpoint) dos logs.
+    Extrai métricas de API (Método, Status, Endpoint, Latência) dos logs.
+    Prioriza campos estruturados (ex: colunas 'latency_ms', 'status_code') e
+    faz fallback para parsing de regex na coluna 'message' se não encontrados.
     """
     if df.empty:
         return pd.DataFrame()
 
-    work_df = df.reset_index(drop=True)
+    work_df = df.reset_index(drop=True).copy() # Use copy to avoid SettingWithCopyWarning
 
-    # Regex otimizado para Método e Path
-    # Captura: Método (Grupo 1) + Espaço + Endpoint (Grupo 2)
-    method_path_pattern = r'(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS)\s+([^\s?]+)'
-    # Regex para RequestPath (SignalR/Blazor) - Case Insensitive
-    request_path_pattern = r'RequestPath[:=]\s*([^\s,"]+)'
-    
-    # Regex para Status Code (3 dígitos entre 100-599)
-    status_pattern = r'(?:^|\s|status[:=]\s*)([1-5]\d{2})(?:\s|$)'
+    # --- Inicializa DataFrame de resultado ---
+    base_cols = ['timestamp', 'source']
+    for col in ['message', 'log_level', 'category', 'streams']:
+        if col in work_df.columns:
+            base_cols.append(col)
+    result = work_df[base_cols].copy()
 
-    df_str = work_df['message'].astype(str)
-    extracted_mp = df_str.str.extract(method_path_pattern, flags=re.IGNORECASE)
-    extracted_rp = df_str.str.extract(request_path_pattern, flags=re.IGNORECASE)
-    extracted_status = df_str.str.extract(status_pattern, flags=re.IGNORECASE)
+    # --- 1. Extração de Latência (Prioriza coluna existente) ---
+    result['latency_ms'] = np.nan
+    # Tenta usar colunas numéricas existentes primeiro
+    latency_col_candidates = ['latency_ms', 'duration', 'took', 'elapsed_ms']
+    for col in latency_col_candidates:
+        if col in work_df.columns and pd.api.types.is_numeric_dtype(work_df[col]):
+            # Preenche apenas onde ainda é NaN (permite mesclar colunas diferentes)
+            result['latency_ms'] = result['latency_ms'].fillna(work_df[col])
     
-    result = work_df[['timestamp', 'source']].copy()
-    result['method'] = extracted_mp[0].str.upper()
-    result['endpoint'] = extracted_mp[1]
+    # Fallback: Se ainda existem valores nulos, tenta regex na mensagem (apenas nas linhas faltantes)
+    missing_lat_mask = result['latency_ms'].isna()
+    if missing_lat_mask.any():
+        df_str = work_df.loc[missing_lat_mask, 'message'].astype(str)
+        extracted_latency = df_str.str.extract(LATENCY_PATTERN)
+        
+        if not extracted_latency.empty:
+            extracted_latency.columns = ['value', 'unit']
+            valid_mask = extracted_latency['value'].notna()
+            
+            if valid_mask.any():
+                # Mapeia de volta para o índice original
+                valid_lat = extracted_latency[valid_mask]
+                values = pd.to_numeric(valid_lat['value'], errors='coerce')
+                units = valid_lat['unit'].str.lower().fillna('ms')
+                
+                conditions = [units.isin(['s', 'sec']), units == 'min', units.isin(['us', 'µs'])]
+                choices = [values * 1000, values * 60000, values / 1000]
+                
+                converted_values = np.select(conditions, choices, default=values)
+                result.loc[valid_lat.index, 'latency_ms'] = converted_values
+
+    # --- 2. Extração de Status Code (Prioriza coluna) ---
+    result['status_code'] = None
+    if 'status_code' in work_df.columns:
+        result['status_code'] = work_df['status_code']
+    elif 'http_status_code' in work_df.columns:
+        result['status_code'] = work_df['http_status_code']
+    else: # Fallback para regex
+        status_pattern = r'(?:^|\s|status(?:_?code)?["\']?[:=]\s*["\']?)([1-5]\d{2})(?:["\']?[\s,}]|$)'
+        extracted_status = work_df['message'].astype(str).str.extract(status_pattern, flags=re.IGNORECASE)
+        if not extracted_status.empty:
+            result['status_code'] = extracted_status[0]
+
+    # --- 3. Extração de Método e Endpoint (Prioriza colunas) ---
+    result['method'] = None
+    result['endpoint'] = None
     
-    # Fallback: Se não achou método HTTP padrão, mas achou RequestPath (SignalR)
-    mask_rp = result['endpoint'].isna() & extracted_rp[0].notna()
-    result.loc[mask_rp, 'endpoint'] = extracted_rp.loc[mask_rp, 0]
-    result.loc[mask_rp, 'method'] = 'RPC' # Classifica como RPC/SignalR
-    
-    result['status_code'] = extracted_status[0]
-    
-    # Retorna apenas linhas que tenham pelo menos o método identificado
-    return result.dropna(subset=['method'], how='any')
+    # Prioridade 1: Colunas explícitas
+    if 'http_method' in work_df.columns:
+        result['method'] = work_df['http_method']
+    if 'http_path' in work_df.columns:
+        result['endpoint'] = work_df['http_path']
+    elif 'RequestPath' in work_df.columns: # Fallback para outro nome comum
+        result['endpoint'] = work_df['RequestPath']
+
+    # Prioridade 2: Fallback para Regex se método ou endpoint não foram encontrados
+    if result['method'].isna().any() or result['endpoint'].isna().any():
+        method_path_pattern = r'(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS)\s+([^\s?]+)'
+        request_path_pattern = r'RequestPath["\']?[:=]\s*["\']?([^\s,"]+)["\']?'
+        
+        df_str = work_df['message'].astype(str)
+        extracted_mp = df_str.str.extract(method_path_pattern, flags=re.IGNORECASE)
+        extracted_rp = df_str.str.extract(request_path_pattern, flags=re.IGNORECASE)
+
+        # Preenche apenas os que estão faltando (NaN)
+        if not extracted_mp.empty:
+            result['method'] = result['method'].fillna(extracted_mp[0].str.upper())
+            result['endpoint'] = result['endpoint'].fillna(extracted_mp[1])
+        
+        # Fallback final para RequestPath dentro da mensagem
+        if not extracted_rp.empty:
+            mask_rp = result['endpoint'].isna() & extracted_rp[0].notna()
+            result.loc[mask_rp, 'endpoint'] = extracted_rp.loc[mask_rp, 0]
+            # Se o método ainda for nulo para esses, classifica como RPC
+            result.loc[mask_rp & result['method'].isna(), 'method'] = 'RPC'
+
+    # Retorna linhas que possuam métricas relevantes (Método, Endpoint, Status ou Latência)
+    # Evita descartar logs que tenham latência mas falharam na detecção do método
+    relevant_mask = (
+        result['method'].notna() | 
+        result['endpoint'].notna() | 
+        result['status_code'].notna() | 
+        result['latency_ms'].notna()
+    )
+    result = result[relevant_mask].copy()
+
+    # Preenche defaults para permitir agrupamentos
+    result['method'] = result['method'].fillna('UNKNOWN')
+    result['endpoint'] = result['endpoint'].fillna('UNKNOWN')
+
+    return result
 
 
 def extract_cicd_metrics(df):
@@ -886,57 +925,37 @@ def extract_cicd_metrics(df):
     Extrai métricas de CI/CD (Pipelines, Builds, Deploys) dos logs.
     Procura por padrões como 'Pipeline status: success', 'Build duration: 120s'.
     """
-    if df.empty:
-        return pd.DataFrame()
-
-    # Filtra logs que parecem ser de CI/CD
-    mask = df['message'].astype(str).str.contains(r'pipeline|build|deploy|release|ci/cd|test run', case=False, regex=True)
-    cicd_df = df[mask].copy()
-    
-    if cicd_df.empty:
-        return pd.DataFrame()
-
-    # Extração de Status
-    cicd_df['status'] = 'Unknown'
-    cicd_df.loc[cicd_df['message'].str.contains(r'success|pass|completed', case=False), 'status'] = 'Success'
-    cicd_df.loc[cicd_df['message'].str.contains(r'fail|error|broken', case=False), 'status'] = 'Failure'
-    cicd_df.loc[cicd_df['message'].str.contains(r'start|running|progress', case=False), 'status'] = 'In Progress'
-
-    # Extração de Duração (ex: "took 12s", "duration: 150ms")
-    dur_extract = cicd_df['message'].str.extract(r'(?:duration|took|time)[:\s]+(\d+(?:\.\d+)?)\s*(s|ms|m)', flags=re.IGNORECASE)
-    cicd_df['duration_s'] = 0.0
-    
-    if not dur_extract.empty:
-        vals = pd.to_numeric(dur_extract[0], errors='coerce').fillna(0)
-        units = dur_extract[1].str.lower()
-        cicd_df.loc[units == 's', 'duration_s'] = vals
-        cicd_df.loc[units == 'ms', 'duration_s'] = vals / 1000
-        cicd_df.loc[units == 'm', 'duration_s'] = vals * 60
-
-    # Identificação do Estágio
-    cicd_df['stage'] = 'General'
-    cicd_df.loc[cicd_df['message'].str.contains('build', case=False), 'stage'] = 'Build'
-    cicd_df.loc[cicd_df['message'].str.contains('test', case=False), 'stage'] = 'Test'
-    cicd_df.loc[cicd_df['message'].str.contains('deploy', case=False), 'stage'] = 'Deploy'
-
-    return cicd_df
+    return cicd_analysis.extract_cicd_metrics(df)
 
 
 def analyze_security_threats(df):
     """Análise simples de segurança (SIEM). Extrai IPs e verifica volume de erros."""
+    if df.empty:
+        return pd.DataFrame()
+        
     # Vectorized IP extraction
     work_df = df.reset_index(drop=True)
     ips_series = work_df['message'].astype(str).str.findall(IP_PATTERN)
     exploded = ips_series.explode()
-    exploded = exploded.dropna()
+    
+    # Filtra valores vazios ou nulos
+    exploded = exploded[exploded.notna() & (exploded != "")]
     
     if exploded.empty:
         return pd.DataFrame()
         
     sec_df = work_df.loc[exploded.index, ['timestamp', 'log_level', 'source']].copy()
     sec_df['ip'] = exploded.values
+    
+    # Normaliza níveis de log e define lista de erros
+    sec_df['log_level'] = sec_df['log_level'].astype(str).str.capitalize()
+    error_levels = ['Error', 'Fail', 'Critical', 'Fatal']
         
-    ip_stats = sec_df.groupby('ip').agg(total_logs=('timestamp', 'count'), error_count=('log_level', lambda x: x.isin(['Error', 'Fail']).sum())).reset_index()
+    ip_stats = sec_df.groupby('ip').agg(
+        total_logs=('timestamp', 'count'), 
+        error_count=('log_level', lambda x: x.isin(error_levels).sum())
+    ).reset_index()
+    
     ip_stats['error_rate'] = ip_stats['error_count'] / ip_stats['total_logs']
     ip_stats['status'] = ip_stats.apply(lambda x: '🔴 Crítico' if x['error_rate'] > 0.5 and x['total_logs'] > 5 else ('🟡 Suspeito' if x['error_rate'] > 0.2 else '🟢 Normal'), axis=1)
     return ip_stats.sort_values('error_count', ascending=False)
@@ -1218,189 +1237,6 @@ def generate_rca_prompt(df):
     return prompt
 
 
-def generate_volume_forecast(df, periods=60):
-    """
-    Gera uma previsão de volume de logs.
-    Tenta usar Holt-Winters (Exponential Smoothing) para capturar sazonalidade.
-    Faz fallback para Regressão Linear se necessário.
-    """
-    if df.empty or 'timestamp' not in df.columns:
-        return pd.DataFrame(), "Dados insuficientes", 0
-
-    # Garante datetime
-    temp_df = df.copy()
-    if not pd.api.types.is_datetime64_any_dtype(temp_df['timestamp']):
-        temp_df['timestamp'] = pd.to_datetime(temp_df['timestamp'], errors='coerce')
-    
-    temp_df = temp_df.dropna(subset=['timestamp'])
-
-    # Resample adaptativo: Se tiver pouco tempo de dados (< 5 min), usa granularidade de segundos
-    duration_sec = (temp_df['timestamp'].max() - temp_df['timestamp'].min()).total_seconds()
-    
-    if duration_sec < 60:
-        rule = '1S' # 1 segundo para durações muito curtas
-    elif duration_sec < 300:
-        rule = '10S' # 10 segundos
-    else:
-        rule = 'T' # 1 minuto
-
-    df_hist = temp_df.set_index('timestamp').resample(rule).size().reset_index(name='count')
-    
-    # Se tiver poucos pontos, não faz previsão confiável
-    if len(df_hist) < 2:
-        return pd.DataFrame(), "Dados insuficientes", 0
-
-    # --- TENTATIVA 1: Holt-Winters (Sazonalidade) ---
-    try:
-        from statsmodels.tsa.holtwinters import ExponentialSmoothing
-        
-        # Heurística: HW precisa de histórico razoável e granularidade de minuto para ser estável
-        if rule == 'T' and len(df_hist) >= 5:
-            # Prepara série temporal com frequência definida
-            ts_data = df_hist.set_index('timestamp')['count'].asfreq('T', fill_value=0)
-            
-            # Tenta detectar sazonalidade horária (60 min) se tivermos dados suficientes (> 2h)
-            seasonal_periods = 60 if len(ts_data) > 120 else None
-            seasonal_type = 'add' if seasonal_periods else None
-            
-            # Ajusta o modelo (Trend + Seasonality)
-            model = ExponentialSmoothing(
-                ts_data, 
-                trend='add', 
-                seasonal=seasonal_type, 
-                seasonal_periods=seasonal_periods,
-                initialization_method="estimated"
-            ).fit()
-            
-            forecast_values = model.forecast(periods)
-            
-            # Monta DataFrame
-            future_dates = [ts_data.index[-1] + pd.Timedelta(minutes=i+1) for i in range(periods)]
-            df_forecast = pd.DataFrame({'timestamp': future_dates, 'count': forecast_values.values, 'type': 'Previsão (Holt-Winters) 🔮'})
-            
-            df_hist['type'] = 'Histórico 📊'
-            full_df = pd.concat([df_hist[['timestamp', 'count', 'type']], df_forecast])
-            
-            # Calcula inclinação média (slope) para compatibilidade com alertas
-            y_start = ts_data.iloc[-1]
-            y_end = forecast_values.iloc[-1]
-            m = (y_end - y_start) / (periods * 60) # Variação por segundo
-            
-            trend = "Crescente 📈" if m > 0.05 else ("Decrescente 📉" if m < -0.05 else "Estável ➡️")
-            
-            return full_df, trend, m
-            
-    except ImportError:
-        pass # Statsmodels não instalado
-    except Exception:
-        pass # Erro no ajuste do modelo (dados ruidosos demais)
-
-    # --- TENTATIVA 2: Regressão Linear (Fallback) ---
-    # Prepara X (tempo em segundos) e Y (contagem)
-    df_hist['time_sec'] = df_hist['timestamp'].astype(np.int64) // 10**9
-    X = df_hist['time_sec'].values
-    y = df_hist['count'].values
-
-    # Regressão Linear (Grau 1) -> y = mx + b
-    m, b = np.polyfit(X, y, 1)
-
-    # Gera dados futuros
-    last_time = df_hist['timestamp'].max()
-    future_dates = [last_time + pd.Timedelta(minutes=i+1) for i in range(periods)]
-    future_secs = np.array([t.timestamp() for t in future_dates])
-    
-    future_counts = m * future_secs + b
-    future_counts = np.maximum(future_counts, 0) # Evita contagem negativa
-
-    df_forecast = pd.DataFrame({'timestamp': future_dates, 'count': future_counts, 'type': 'Previsão (Linear) 🔮'})
-    df_hist['type'] = 'Histórico 📊'
-    
-    full_df = pd.concat([df_hist[['timestamp', 'count', 'type']], df_forecast])
-    
-    # Determina tendência
-    if m > 0.05: trend = "Crescente 📈"
-    elif m < -0.05: trend = "Decrescente 📉"
-    else: trend = "Estável ➡️"
-    
-    return full_df, trend, m
-
-
-def detect_log_periodicity(df):
-    """
-    Usa FFT (Fast Fourier Transform) para detectar periodicidade no volume de logs.
-    Retorna lista de tuplas (periodo_minutos, forca_sinal).
-    """
-    if df.empty or 'timestamp' not in df.columns:
-        return []
-
-    # Garante datetime
-    temp_df = df.copy()
-    if not pd.api.types.is_datetime64_any_dtype(temp_df['timestamp']):
-        temp_df['timestamp'] = pd.to_datetime(temp_df['timestamp'], errors='coerce')
-    
-    temp_df = temp_df.dropna(subset=['timestamp'])
-    
-    # Resample para minutos (frequência de amostragem = 1/min)
-    # Preenche gaps com 0 para manter a linearidade do tempo
-    ts = temp_df.set_index('timestamp').resample('T').size()
-    # ADAPTATIVO: Ajusta amostragem baseada na duração para permitir FFT em janelas curtas
-    duration_sec = (temp_df['timestamp'].max() - temp_df['timestamp'].min()).total_seconds()
-    
-    if duration_sec < 300: # Menos de 5 min
-        rule = '5S' # Amostra a cada 5 segundos
-        d_val = 5.0 / 60.0 # Espaçamento ajustado para manter a frequência em ciclos/minuto
-    else:
-        rule = 'T'
-        d_val = 1.0
-
-    ts = temp_df.set_index('timestamp').resample(rule).size()
-    
-    N = len(ts)
-    # Precisa de pelo menos ~20 minutos de dados para detectar algo útil (ajustado)
-    if N < 3:
-        return []
-        
-    # Detrending simples (subtrair média) para remover componente DC
-    data = ts.values
-    data = data - np.mean(data)
-    
-    # FFT Real (rfft é otimizado para input real)
-    fft_spectrum = np.fft.rfft(data)
-    fft_freqs = np.fft.rfftfreq(N, d=1) # d=1 minuto -> freq em ciclos/minuto
-    fft_freqs = np.fft.rfftfreq(N, d=d_val) # d ajustado para manter unidade em ciclos/minuto
-    
-    # Magnitude do espectro
-    magnitude = np.abs(fft_spectrum)
-    
-    # Ignora frequências muito baixas (tendências lineares ou ciclos maiores que metade do dataset)
-    min_freq = 2.0 / N
-    mask = fft_freqs > min_freq
-    
-    magnitude = magnitude[mask]
-    fft_freqs = fft_freqs[mask]
-    
-    if len(magnitude) == 0:
-        return []
-        
-    # Normaliza magnitude (0 a 1)
-    if magnitude.max() > 0:
-        magnitude = magnitude / magnitude.max()
-    
-    # Encontra picos significativos (> 0.3 de força relativa)
-    peaks = []
-    # Varre o espectro procurando picos locais
-    for i in range(1, len(magnitude)-1):
-        if magnitude[i] > magnitude[i-1] and magnitude[i] > magnitude[i+1]:
-            if magnitude[i] > 0.15: # Threshold de sensibilidade (reduzido para detectar sinais mais fracos)
-                period = 1.0 / fft_freqs[i]
-                peaks.append((period, magnitude[i]))
-    
-    # Ordena por força do sinal (mais forte primeiro)
-    peaks.sort(key=lambda x: x[1], reverse=True)
-    
-    return peaks[:3] # Retorna top 3 períodos
-
-
 def fetch_logs_from_graylog(api_url, username, password, query="*", relative=300, limit=1000, fields="timestamp,source,message"):
     """
     Busca logs usando a Service Account locktonlogs.
@@ -1425,25 +1261,41 @@ def fetch_logs_from_graylog(api_url, username, password, query="*", relative=300
         # Desabilita avisos de SSL (importante para o ambiente interno da Lockton)
         requests.packages.urllib3.disable_warnings()
         
-        # Uso de Session para eficiência de conexão (Keep-Alive)
         with requests.Session() as session:
             session.auth = HTTPBasicAuth(username.strip(), password.strip())
             session.verify = False
+            # Alterado para 'application/json' para obter dados mais ricos, incluindo streams.
+            session.headers.update({"Accept": "application/json"})
+
             response = session.get(
                 endpoint,
                 params=params,
-                headers={"Accept": "text/csv"},
                 timeout=30
             )
         
         response.raise_for_status()
-        if not response.text.strip():
+        
+        data = response.json()
+        messages = data.get("messages", [])
+
+        if not messages:
             return pd.DataFrame(), None
-        df = pd.read_csv(io.StringIO(response.text))
+
+        # Extrai o conteúdo de cada mensagem e cria um DataFrame
+        log_list = [m.get("message", {}) for m in messages]
+        df = pd.DataFrame(log_list)
+
+        # Remove a coluna _id do MongoDB, que não é útil para a análise
+        if '_id' in df.columns:
+            df = df.drop(columns=['_id'])
+
         return df, None
         
     except Exception as e:
-        return None, f"Erro na conexão: {str(e)}"
+        error_msg = str(e)
+        if "getaddrinfo failed" in error_msg or "NameResolutionError" in error_msg:
+            return None, f"Erro de DNS/Rede: Não foi possível encontrar o servidor Graylog. Verifique se você está conectado à VPN ou se a URL está correta. Detalhes: {error_msg}"
+        return None, f"Erro na conexão: {error_msg}"
 
 def get_graylog_node_id(api_url, username, password="token"):
     """
@@ -1480,15 +1332,15 @@ def get_graylog_node_id(api_url, username, password="token"):
         print(f"Erro ao buscar Node ID: {e}")
         return None
 
-def get_graylog_system_stats(api_url, username, password, endpoint="/system/lbstatus"):
+def get_graylog_system_stats(username, password, endpoint, base_url):
     """
     Busca estatísticas de endpoints de sistema do Graylog.
     Endpoints úteis: /system/throughput, /system/journal, /cluster/nodes, /system/lbstatus
     """
-    if not api_url or not username:
+    if not base_url or not username:
         return None
 
-    api_url = api_url.strip().rstrip('/')
+    api_url = base_url.strip().rstrip('/')
     if not api_url.endswith('/api'):
         api_url += '/api'
         
@@ -1509,48 +1361,223 @@ def get_graylog_system_stats(api_url, username, password, endpoint="/system/lbst
             timeout=10
         )
         
-        if response.status_code == 200:
-            return response.json()
-        
+        response.raise_for_status() # Lança exceção para status 4xx/5xx
+        return response.json()
+    except requests.exceptions.HTTPError as e:
+        print(f"Erro HTTP ao buscar stats ({full_url}): {e.response.status_code} - {e.response.text}")
         return None
     except Exception as e:
-        print(f"Erro ao buscar stats ({endpoint}): {e}")
+        print(f"Erro genérico ao buscar stats ({full_url}): {e}")
         return None
 
-def create_jira_ticket(jira_url, username, api_token, project_key, summary, description, issue_type='Bug'):
-    """Cria um ticket no Jira via API."""
-    # Garante que a URL não tem barra no final
-    base_url = jira_url.rstrip('/')
-    api_endpoint = f"{base_url}/rest/api/2/issue"
-    
-    auth = HTTPBasicAuth(username, api_token)
-    headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json"
-    }
-    
-    payload = {
-        "fields": {
-            "project": {
-                "key": project_key
-            },
-            "summary": summary,
-            "description": description,
-            "issuetype": {
-                "name": issue_type
-            }
-        }
-    }
+def call_graylog_api(method, endpoint, base_url, username, password, json_body=None):
+    """
+    Generic function to make authenticated API calls to Graylog (GET, POST, PUT, DELETE).
+    """
+    if not base_url or not username:
+        return None, "Credenciais da API do Graylog não configuradas."
+
+    api_url = base_url.strip().rstrip('/')
+    if not api_url.endswith('/api'):
+        api_url += '/api'
+        
+    if not endpoint.startswith('/'):
+        endpoint = '/' + endpoint
+        
+    full_url = f"{api_url}{endpoint}"
     
     try:
-        response = requests.post(api_endpoint, json=payload, headers=headers, auth=auth, timeout=10)
+        requests.packages.urllib3.disable_warnings()
         
-        if response.status_code not in [200, 201]:
-            return None, f"Erro {response.status_code}: {response.text}"
-            
+        with requests.Session() as session:
+            session.auth = HTTPBasicAuth(username.strip(), password.strip())
+            session.verify = False
+            session.headers.update({"Accept": "application/json", "X-Requested-By": "log-analyzer"})
+
+            response = session.request(
+                method=method.upper(),
+                url=full_url,
+                json=json_body,
+                timeout=20
+            )
+        
+        response.raise_for_status()
+        # Some successful calls (like DELETE) might not return a body
+        if response.status_code == 204 or not response.content:
+            return {}, None
+        
         return response.json(), None
+        
+    except requests.exceptions.HTTPError as e:
+        error_text = e.response.text
+        try:
+            error_json = e.response.json()
+            error_msg = error_json.get("message", error_text)
+        except json.JSONDecodeError:
+            error_msg = error_text
+        return None, f"Erro na API Graylog: {e.response.status_code} - {error_msg}"
     except Exception as e:
-        return None, str(e)
+        return None, f"Erro de conexão com a API Graylog: {e}"
+
+def get_graylog_cluster_nodes(api_url, username, password):
+    """Busca a lista de nós e seus IDs no cluster Graylog."""
+    if not api_url or not username:
+        return []
+    
+    api_url = api_url.strip().rstrip('/')
+    if not api_url.endswith('/api'):
+        api_url += '/api'
+        
+    endpoint = f"{api_url}/cluster"
+    
+    try:
+        requests.packages.urllib3.disable_warnings()
+        response = requests.get(
+            endpoint,
+            auth=HTTPBasicAuth(username.strip(), password.strip()),
+            headers={"Accept": "application/json"},
+            verify=False,
+            timeout=10
+        )
+        response.raise_for_status()
+        data = response.json()
+        nodes = data.get("nodes", [])
+        # Retorna apenas nós que estão vivos
+        alive_nodes = [node for node in nodes if node.get('is_alive')]
+        return alive_nodes
+    except Exception as e:
+        print(f"Erro ao buscar nós do cluster: {e}")
+        return []
+
+def get_graylog_streams_with_throughput(api_url, username, password):
+    """
+    Busca streams ativas e combina com seus dados de throughput.
+    """
+    if not api_url or not username:
+        return [], "Credenciais da API do Graylog não configuradas."
+
+    # 1. Buscar todas as streams ativas
+    streams_data = get_graylog_system_stats(username, password, "/streams/enabled", api_url)
+    if streams_data is None:
+        return [], "Falha ao buscar streams do Graylog. Verifique a conexão e permissões."
+    
+    # 2. Throughput por stream (Removido chamada inválida /streams/throughput que causava 404)
+    throughput_map = {}
+
+    # 3. Combinar os dados
+    combined_streams = []
+    for stream in streams_data.get("streams", []):
+        stream_id = stream.get("id")
+        stream_throughput = throughput_map.get(stream_id, 0)
+        
+        stream['throughput'] = stream_throughput
+        combined_streams.append(stream)
+        
+    return sorted(combined_streams, key=lambda x: x.get('throughput', 0), reverse=True), None
+
+def get_graylog_stream_details(api_url, username, password, stream_id):
+    """
+    Busca detalhes e regras de uma stream específica.
+    """
+    # A função call_graylog_api já lida com erros, então podemos simplificar.
+    details, err1 = call_graylog_api('GET', f"/streams/{stream_id}", api_url, username, password)
+    if err1:
+        return None, f"Falha ao buscar detalhes da stream: {err1}"
+
+    rules, err2 = call_graylog_api('GET', f"/streams/{stream_id}/rules", api_url, username, password)
+    if err2:
+        return None, f"Falha ao buscar regras da stream: {err2}"
+
+    # Combina os resultados em um único objeto para o frontend
+    details['rules'] = rules.get('stream_rules', [])
+    return details, None
+
+def get_graylog_alert_definitions(api_url, username, password):
+    """Busca todas as definições de alerta (regras) do Graylog."""
+    return call_graylog_api('GET', "/events/definitions", api_url, username, password)
+
+def get_graylog_triggered_alerts(api_url, username, password):
+    """Busca os alertas disparados recentemente."""
+    # Usamos o paginated para ter mais controle, mas por simplicidade pegamos a primeira página
+    return call_graylog_api('GET', "/streams/alerts/paginated?page=1&per_page=50", api_url, username, password)
+
+def toggle_graylog_alert_schedule(api_url, username, password, alert_id, enable):
+    """Ativa ou desativa o agendamento de um alerta."""
+    method = 'PUT' if enable else 'DELETE'
+    endpoint = f"/events/definitions/{alert_id}/schedule"
+    return call_graylog_api(method, endpoint, api_url, username, password)
+
+def execute_graylog_alert_test(api_url, username, password, alert_id):
+    """Executa a verificação de um alerta manualmente."""
+    endpoint = f"/events/definitions/{alert_id}/execute"
+    return call_graylog_api('POST', endpoint, api_url, username, password)
+
+def test_log_parsing(api_url, username, password, raw_message):
+    """Testa o parsing de uma mensagem raw no Graylog usando o endpoint /messages/parse."""
+    endpoint = "/messages/parse"
+    payload = {
+        "message": raw_message,
+        "codec": "json",
+        "config": {},
+        "gelf": False,
+        "raw": True
+    }
+    return call_graylog_api('POST', endpoint, api_url, username, password, json_body=payload)
+
+def fetch_infrastructure_metrics_from_graylog(api_url, username, password):
+    """
+    Busca métricas de infraestrutura (CPU, Memória, etc.) diretamente do nó Graylog conectado.
+    Esta é uma abordagem mais confiável do que extrair de logs.
+    """
+    # Busca as métricas usando os endpoints corretos para o nó conectado
+    os_stats = get_graylog_system_stats(username, password, endpoint="/system/stats/os", base_url=api_url)
+    
+    # Se não conseguir pegar nem o OS stats, provavelmente não há conexão.
+    if not os_stats:
+        return pd.DataFrame(), "Não foi possível buscar estatísticas do sistema do nó Graylog. Verifique a URL da API e as permissões do token."
+
+    jvm_stats = get_graylog_system_stats(username, password, endpoint="/system/stats/jvm", base_url=api_url)
+    fs_stats = get_graylog_system_stats(username, password, endpoint="/system/stats/fs", base_url=api_url)
+    journal_stats = get_graylog_system_stats(username, password, endpoint="/system/journal", base_url=api_url)
+    lb_status = get_graylog_system_stats(username, password, endpoint="/system/lbstatus", base_url=api_url)
+
+    all_metrics = []
+    now = datetime.now().isoformat()
+    hostname = os_stats.get("node_id", get_host_from_url(api_url))
+
+    # Processa as métricas
+    cpu_usage_percent = 0
+    if os_stats and "os" in os_stats:
+        cpu_cores = os_stats["os"].get("processors", 1)
+        load_1m = os_stats["os"].get("load_average", {}).get("1m", 0.0)
+        cpu_usage_percent = (load_1m / cpu_cores) * 100 if cpu_cores > 0 else 0
+
+    mem_usage_percent = 0
+    if jvm_stats and "jvm" in jvm_stats:
+        heap_used = jvm_stats["jvm"].get("memory", {}).get("heap", {}).get("used_bytes", 0)
+        heap_max = jvm_stats["jvm"].get("memory", {}).get("heap", {}).get("max_bytes", 1)
+        mem_usage_percent = (heap_used / heap_max) * 100 if heap_max > 0 else 0
+
+    disk_usage_percent = 0
+    if fs_stats and "fs" in fs_stats and "total" in fs_stats["fs"]:
+        total_bytes = fs_stats["fs"]["total"].get("total_in_bytes", 1)
+        free_bytes = fs_stats["fs"]["total"].get("free_in_bytes", 0)
+        disk_usage_percent = ((total_bytes - free_bytes) / total_bytes) * 100 if total_bytes > 0 else 0
+    
+    journal_uncommitted = journal_stats.get("uncommitted_entries", 0) if journal_stats else 0
+    node_lb_status = lb_status.get("status", "UNKNOWN").upper() if lb_status else "UNKNOWN"
+
+    all_metrics.append({
+        "timestamp": now, 
+        "source": hostname, 
+        "cpu": round(cpu_usage_percent, 2), 
+        "memory": round(mem_usage_percent, 2), 
+        "disk": round(disk_usage_percent, 2),
+        "journal_uncommitted": journal_uncommitted,
+        "lb_status": node_lb_status
+    })
+            
+    return pd.DataFrame(all_metrics), None
 
 def get_host_from_url(url):
     """Extrai o hostname de uma URL (ex: http://graylog:9000/api -> graylog)."""
@@ -1912,3 +1939,172 @@ def check_api_health(url, timeout=5):
             "latency_ms": 0,
             "error": str(e)
         }
+
+def format_graylog_table(row):
+    """
+    Formata uma linha de log (Series/Dict) em uma tabela Markdown para alertas do Teams.
+    Chamado pelo scheduler.py ao detectar erro crítico.
+    """
+    try:
+        # Seleciona campos relevantes para o alerta
+        fields = {
+            "Timestamp": str(row.get('timestamp', 'N/A')),
+            "Source": str(row.get('source', 'N/A')),
+            "Level": str(row.get('log_level', row.get('level', 'N/A'))),
+            "Container": str(row.get('container_name', 'N/A')),
+            "Message": str(row.get('message', ''))
+        }
+        
+        md_table = "| Campo | Valor |\n|---|---|\n"
+        for k, v in fields.items():
+            md_table += f"| **{k}** | {v} |\n"
+            
+        return md_table
+    except Exception as e:
+        return f"Erro ao formatar tabela: {e}"
+
+def save_to_disk(): pass
+def load_from_disk(): pass
+
+def compute_api_stats(api_df):
+    """
+    Calcula estatísticas agregadas a partir de um DataFrame de métricas de API.
+    """
+    if api_df.empty:
+        return {
+            "stats": {"total": 0, "success": 0, "client_error": 0, "server_error": 0, "avg_latency": 0},
+            "status_counts": [],
+            "method_counts": [],
+            "top_endpoints": [],
+            "slowest_endpoints": []
+        }
+    
+    # Stats
+    total = len(api_df)
+    s_codes = pd.to_numeric(api_df['status_code'], errors='coerce').fillna(0)
+    
+    # Estatísticas de latência
+    valid_latency = api_df['latency_ms'].dropna()
+    avg_latency = round(valid_latency.mean(), 2) if not valid_latency.empty else 0
+    
+    stats = {
+        "total": total,
+        "success": int(((s_codes >= 200) & (s_codes < 300)).sum()),
+        "client_error": int(((s_codes >= 400) & (s_codes < 500)).sum()),
+        "server_error": int(((s_codes >= 500) & (s_codes < 600)).sum()),
+        "avg_latency": avg_latency
+    }
+    
+    # Agregações para Gráficos
+    df = api_df.copy()
+    df['status_code'] = df['status_code'].fillna('Unknown')
+    
+    status_counts = df['status_code'].value_counts().reset_index(name='count').rename(columns={'index': 'code', 'status_code': 'code'})
+    method_counts = df['method'].value_counts().reset_index(name='count').rename(columns={'index': 'method', 'method': 'method'})
+    top_endpoints = df['endpoint'].value_counts().head(10).reset_index(name='count').rename(columns={'index': 'endpoint', 'endpoint': 'endpoint'})
+    
+    # Nova agregação: Endpoints mais lentos (baseado no P95)
+    slowest_endpoints = pd.DataFrame()
+    if 'latency_ms' in api_df.columns and not api_df['latency_ms'].dropna().empty:
+        slowest_endpoints = df.groupby('endpoint').agg(
+            p95_latency=('latency_ms', lambda x: x.quantile(0.95)),
+            avg_latency=('latency_ms', 'mean'),
+            max_latency=('latency_ms', 'max'),
+            count=('latency_ms', 'count')
+        ).reset_index().sort_values('p95_latency', ascending=False).head(5)
+        
+        # Arredonda valores para uma resposta mais limpa
+        for col in ['p95_latency', 'avg_latency', 'max_latency']:
+            slowest_endpoints[col] = slowest_endpoints[col].round(2)
+
+        # Adiciona o log representativo (mais lento) para cada endpoint (para exibir no modal ao clicar)
+        slowest_logs = []
+        for ep in slowest_endpoints['endpoint']:
+            ep_logs = df[df['endpoint'] == ep]
+            if not ep_logs.empty and 'latency_ms' in ep_logs.columns:
+                valid_latencies = ep_logs['latency_ms'].dropna()
+                if not valid_latencies.empty:
+                    slowest_idx = valid_latencies.idxmax()
+                    row = ep_logs.loc[slowest_idx]
+                    slowest_logs.append({
+                        "timestamp": str(row.get('timestamp', '')),
+                        "source": str(row.get('source', '')),
+                        "log_level": str(row.get('log_level', 'Info')),
+                        "category": str(row.get('category', 'API')),
+                        "message": str(row.get('message', ''))
+                    })
+                else:
+                    slowest_logs.append({})
+            else:
+                slowest_logs.append({})
+                
+        slowest_endpoints['slowest_log'] = slowest_logs
+
+    return {
+        "stats": stats,
+        "status_counts": status_counts.to_dict(orient='records'),
+        "method_counts": method_counts.to_dict(orient='records'),
+        "top_endpoints": top_endpoints.to_dict(orient='records'),
+        "slowest_endpoints": slowest_endpoints.fillna(0).to_dict(orient='records')
+    }
+
+def compute_data_summary(df):
+    """
+    Calcula o resumo dos dados para o dashboard (Volume, Erros, Sources).
+    Desacoplado da API para facilitar testes e reutilização.
+    """
+    if df is None or df.empty:
+        return {
+            "total_logs": 0,
+            "error_count": 0,
+            "error_rate": 0,
+            "unique_sources": 0
+        }
+
+    total_logs = len(df)
+    
+    # Contagem rápida de erros
+    error_count = 0
+    if 'log_level' in df.columns:
+        error_count = int(df['log_level'].isin(['Error', 'Fail', 'Critical', 'Fatal']).sum())
+        
+    error_rate = round((error_count / total_logs * 100), 2) if total_logs > 0 else 0
+    unique_sources = int(df['source'].nunique()) if 'source' in df.columns else 0
+    
+    return {
+        "total_logs": total_logs,
+        "error_count": error_count,
+        "error_rate": error_rate,
+        "unique_sources": unique_sources
+    }
+
+def compute_volume_series(df):
+    """
+    Calcula apenas a série temporal de volume (Gráfico).
+    Separado para otimização de performance.
+    """
+    if df is None or df.empty:
+        return {"time_series_volume": []}
+    
+    # Time Series com Amostragem Adaptativa (Fix para lentidão externa)
+    time_series = []
+    if 'timestamp' in df.columns:
+        # Conversão segura e tratamento de NA
+        ts_data = pd.to_datetime(df['timestamp'], errors='coerce').dropna()
+        
+        if not ts_data.empty:
+            duration = ts_data.max() - ts_data.min()
+            
+            # Seleciona granularidade baseada na duração total para otimizar payload
+            if duration > pd.Timedelta(days=60): rule = 'D'     # > 2 meses: Diário
+            elif duration > pd.Timedelta(days=7): rule = '4H'   # > 1 semana: 4 horas
+            elif duration > pd.Timedelta(days=2): rule = '1H'   # > 2 dias: 1 hora
+            elif duration > pd.Timedelta(hours=12): rule = '15T'# > 12h: 15 min
+            elif duration > pd.Timedelta(hours=1): rule = 'T'   # > 1h: 1 min
+            else: rule = '10S'                                  # < 1h: 10 seg
+            
+            ts_counts = ts_data.groupby(ts_data.dt.floor(rule)).size().reset_index(name='count')
+            ts_counts['timestamp'] = ts_counts['timestamp'].astype(str)
+            time_series = ts_counts.to_dict(orient='records')
+
+    return {"time_series_volume": time_series}

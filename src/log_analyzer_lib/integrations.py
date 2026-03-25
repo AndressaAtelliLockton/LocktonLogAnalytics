@@ -133,20 +133,25 @@ def calculate_file_hash(file_content):
     """Calcula o hash SHA-256 de um conteúdo de arquivo."""
     return hashlib.sha256(file_content).hexdigest()
 
-def send_jira_automation_webhook(webhook_url, summary, description, email="dashboard@lockton.com", survey_link="", attachments=None, api_key=None):
+def send_jira_automation_webhook(webhook_url, summary, description, email="dashboard@lockton.com", survey_link="http://10.130.0.20:8051/", attachments=None, api_key=None):
     """Envia dados para um webhook de automação do Jira."""
     if not webhook_url: return None, "URL do webhook do Jira não fornecida."
     webhook_url = webhook_url.strip()
-    if "token=" not in webhook_url and api_key:
-        webhook_url += f"&token={api_key}" if "?" in webhook_url else f"?token={api_key}"
+    
+    headers = {"Content-Type": "application/json"}
+    if api_key:
+        headers["X-Automation-Webhook-Token"] = api_key
 
-    payload = {"webhookData": {
-        "Summary": summary, "Description": description, "Email": email,
-        "SurveyLink": survey_link, "Attachment": attachments or []
+    # Limpa a descrição para remover prefixos de teste como (teste) e caracteres especiais como #.
+    cleaned_description = description.replace('#', '').replace('(teste)', '')
+
+    payload = {"data": {
+        "Summary": summary, "Description": cleaned_description, "Email": email,
+        "surveyLink": survey_link, "Attachment": attachments or []
     }}
     
     try:
-        response = requests.post(webhook_url, json=payload, headers={"Content-Type": "application/json"}, timeout=15)
+        response = requests.post(webhook_url, json=payload, headers=headers, timeout=15)
         response.raise_for_status()
         return {"status": "success"}, None
     except requests.exceptions.RequestException as e:

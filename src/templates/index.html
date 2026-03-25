@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lockton Log Analytics</title>
+    
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <!-- Tailwind CSS & Fonts -->
+    <link rel="stylesheet" href="/static/css/output.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+
+    <script>
+        // Configuração de Identidade Visual Lockton para Gráficos (Chart.js)
+        Chart.defaults.font.family = "'Inter', 'Helvetica', 'Arial', sans-serif";
+        Chart.defaults.color = '#333';
+        
+        // Cores Globais
+        Chart.defaults.elements.bar.backgroundColor = '#00529B'; // Azul Lockton
+        Chart.defaults.elements.bar.borderColor = '#000000';
+        Chart.defaults.elements.line.borderColor = '#00529B';
+        Chart.defaults.elements.line.backgroundColor = 'rgba(0, 82, 155, 0.1)';
+        Chart.defaults.elements.point.backgroundColor = '#000000';
+        
+        // Paleta para gráficos de pizza/doughnut
+        Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+        
+        // Variável global para uso em scripts customizados
+        window.LOCKTON_PALETTE = ['#00529B', '#000000', '#546E7A', '#0277BD', '#B0BEC5'];
+    </script>
+    <style>
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .spinner-active { animation: spin 2s linear infinite; display: inline-block; margin-left: 8px; }
+        .sidebar { transition: transform 0.3s ease-in-out; }
+        .nav-link.active { background-color: #1e293b; color: #60a5fa; }
+    </style>
+</head> 
+<body class="bg-slate-100 dark:bg-slate-900 font-sans">
+    <div class="relative min-h-screen lg:flex">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar bg-slate-900 text-slate-300 w-72 space-y-6 py-7 px-2 absolute inset-y-0 left-0 transform -translate-x-full lg:relative lg:translate-x-0 z-30">
+            <div class="px-4 flex items-center gap-3">
+                 <div class="bg-white p-1.5 rounded-lg shadow-lg">
+                    <img src="/static/lockton-logo.png" alt="Lockton" class="h-8 w-auto">
+                </div>
+                <div>
+                    <h1 class="font-bold text-white tracking-tight leading-tight">Log Analytics</h1>
+                    <div class="text-xs text-slate-500 flex items-center gap-1">
+                        v2.0 <span id="auto-update-indicator" class="spinner-active text-blue-400" style="display:none;">🔄</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="px-4 space-y-4">
+                <div>
+                    <h3 class="text-xs font-semibold text-slate-500 uppercase mb-2">Fonte de Dados</h3>
+                    <button id="load-graylog-btn" class="w-full text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-lg py-2 px-3 transition-colors">Carregar do Graylog</button>
+                </div>
+                <div>
+                    <form id="upload-form" class="space-y-2">
+                        <label for="csv-file" class="cursor-pointer w-full text-sm text-center text-slate-300 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg py-2 px-3 transition-colors block">Upload CSV</label>
+                        <input type="file" id="csv-file" name="file" accept=".csv" class="hidden">
+                        <button type="submit" class="hidden">Enviar</button>
+                    </form>
+                </div>
+                <div id="loading-status" class="text-xs text-center min-h-[1.5em] truncate text-slate-400 font-medium"></div>
+            </div>
+
+            <nav class="flex-1 px-2 space-y-1">
+                <a href="#" class="nav-link active flex items-center space-x-3 py-2 px-4 rounded-lg transition duration-200 hover:bg-slate-800" data-target="executive-summary"><i data-lucide="layout-dashboard" class="w-5 h-5"></i><span>Visão Executiva</span></a>
+                <a href="#" class="nav-link flex items-center space-x-3 py-2 px-4 rounded-lg transition duration-200 hover:bg-slate-800" data-target="investigation-page"><i data-lucide="search" class="w-5 h-5"></i><span>Investigação</span></a>
+                <a href="#" class="nav-link flex items-center space-x-3 py-2 px-4 rounded-lg transition duration-200 hover:bg-slate-800" data-target="intelligence-page"><i data-lucide="brain-circuit" class="w-5 h-5"></i><span>Inteligência</span></a>
+                <a href="#" class="nav-link flex items-center space-x-3 py-2 px-4 rounded-lg transition duration-200 hover:bg-slate-800" data-target="custom-metrics-page"><i data-lucide="sliders-horizontal" class="w-5 h-5"></i><span>Métricas Custom</span></a>
+                <a href="#" class="nav-link flex items-center space-x-3 py-2 px-4 rounded-lg transition duration-200 hover:bg-slate-800" data-target="rum-page"><i data-lucide="monitor" class="w-5 h-5"></i><span>RUM (Frontend)</span></a>
+                <a href="#" class="nav-link flex items-center space-x-3 py-2 px-4 rounded-lg transition duration-200 hover:bg-slate-800" data-target="infrastructure-page"><i data-lucide="server" class="w-5 h-5"></i><span>Infraestrutura</span></a>
+                <a href="#" class="nav-link flex items-center space-x-3 py-2 px-4 rounded-lg transition duration-200 hover:bg-slate-800" data-target="api-monitoring-page"><i data-lucide="globe" class="w-5 h-5"></i><span>Monitoramento API</span></a>
+                <a href="#" class="nav-link flex items-center space-x-3 py-2 px-4 rounded-lg transition duration-200 hover:bg-slate-800" data-target="cicd-page"><i data-lucide="git-merge" class="w-5 h-5"></i><span>CI/CD & Pipelines</span></a>
+                <a href="#" class="nav-link flex items-center space-x-3 py-2 px-4 rounded-lg transition duration-200 hover:bg-slate-800" data-target="streams-page"><i data-lucide="arrow-right-left" class="w-5 h-5"></i><span>Streams</span></a>
+                <a href="#" class="nav-link flex items-center space-x-3 py-2 px-4 rounded-lg transition duration-200 hover:bg-slate-800" data-target="alerts-page"><i data-lucide="siren" class="w-5 h-5"></i><span>Alertas</span></a>
+                <a href="#" class="nav-link flex items-center space-x-3 py-2 px-4 rounded-lg transition duration-200 hover:bg-slate-800" data-target="tools-page"><i data-lucide="wrench" class="w-5 h-5"></i><span>Ferramentas</span></a>
+            </nav>
+        </aside>
+
+        <div class="flex-1 lg:ml-2 lg:mr-2">
+            <header class="bg-white dark:bg-slate-800 shadow-sm p-4 flex items-center justify-between sticky top-0 z-20">
+                <button id="menu-toggle-btn" class="lg:hidden text-slate-600 hover:text-slate-900">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+                <h1 id="page-title" class="text-xl font-semibold text-slate-800 dark:text-slate-100 hidden sm:block">Visão Executiva</h1>
+                <div class="flex items-center gap-4">
+                    <button id="reset-filters-btn" class="text-sm text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white">Limpar Filtros</button>
+                    <button id="theme-toggle-btn" class="text-sm text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white">Modo Escuro 🌙</button>
+                </div>
+            </header>
+            
+            <main class="py-4 md:py-6 lg:py-8">
+                {% include "executive_summary.html" %}
+                {% include "investigation.html" %}
+                {% include "intelligence.html" %}
+                {% include "custom_metrics.html" %}
+                {% include "rum.html" %}
+                {% include "infrastructure.html" %}
+                {% include "api_monitoring.html" %}
+                {% include "cicd.html" %}
+                {% include "streams.html" %}
+                {% include "alerts.html" %}
+                {% include "tools.html" %}  
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal de Detalhes do Log -->
+    <div id="log-details-modal" class="modal fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-opacity-50">
+        <div class="bg-white dark:bg-slate-900 rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col p-6 relative">
+            <span class="close-modal absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer text-2xl">&times;</span>
+            <h3 class="text-xl font-bold text-slate-800 dark:text-slate-100 mb-4">Detalhes do Log</h3>
+            <div id="modal-log-content"></div>
+            
+            <div class="my-5 border-t border-slate-200 dark:border-slate-700"></div>
+            
+            <h4 class="text-lg font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                <i data-lucide="history" class="w-5 h-5"></i> Contexto (Logs Vizinhos)
+            </h4>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Logs do mesmo source +/- 5 minutos.</p>
+            <button id="btn-load-context" class="mt-2 px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2 w-fit">
+                <span class="btn-load-context-text">Carregar Contexto</span>
+            </button>
+            <div id="modal-context-logs" class="table-container" style="max-height: 300px; overflow-y: auto; margin-top: 10px; display: none; padding: 0;">
+                <table id="context-table">
+                    <thead><tr><th>Time</th><th>Level</th><th>Message</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            
+            <div class="my-5 border-t border-slate-200 dark:border-slate-700"></div>
+            
+            <h4 class="text-lg font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2"><i data-lucide="bot" class="w-5 h-5"></i> Chat com IA</h4>
+            <div id="modal-chat-history" class="chat-history flex-1 min-h-[100px] my-2"></div>
+            <div class="mt-2 flex items-center gap-2">
+                <input type="text" id="modal-chat-input" placeholder="Pergunte sobre este log..." class="flex-1 px-4 py-2 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-full text-sm text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+                <button id="modal-chat-send" class="flex-shrink-0 bg-blue-600 hover:bg-blue-700 text-white rounded-full h-10 w-10 flex items-center justify-center transition-colors">
+                    <i data-lucide="send" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <!-- GLOBAL LOADER -->
+            <div id="global-loader" class="fixed inset-0 bg-slate-900 bg-opacity-75 z-[9999] flex flex-col items-center justify-center hidden transition-opacity duration-300">
+                <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500 mb-4"></div>
+                <h2 class="text-white text-xl font-semibold">Processando dados...</h2>
+                <p class="text-slate-300 text-sm mt-2">Isso pode levar alguns segundos dependendo do volume de logs.</p>
+            </div>           
+
+            <!-- Container de Ações (Fica no rodapé do modal, após o chat) -->
+            <div id="modal-actions-container" class="mt-8 pt-5 my-5 border-t border-slate-200 dark:border-slate-700 flex justify-end"></div>
+        </div>
+    </div>
+
+    <!-- Modal de Criação de Ticket Jira -->
+    <div id="jira-ticket-modal" class="modal fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-opacity-50">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6 relative">
+            <span class="close-modal absolute top-4 right-4 text-slate-400 hover:text-slate-600 cursor-pointer text-2xl" id="close-jira-modal">&times;</span>
+            <h3 class="text-xl font-bold text-slate-800 mb-4">🎫 Criar Ticket no Jira</h3>
+            <div class="flex flex-col gap-3">
+                <label class="text-sm font-bold text-slate-700">Email do Solicitante:</label>
+                <input type="email" id="jira-ticket-email" placeholder="seu.email@lockton.com" class="px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                
+                <label class="text-sm font-bold text-slate-700">Título (Summary):</label>
+                <input type="text" id="jira-ticket-summary" class="px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                
+                <label class="text-sm font-bold text-slate-700">Descrição:</label>
+                <textarea id="jira-ticket-desc" rows="6" class="px-3 py-2 border border-slate-300 rounded-lg text-sm font-mono bg-slate-50"></textarea>
+                
+                <button id="btn-submit-jira" style="margin-top: 15px; background-color: #00529B; color: white; padding: 10px; border: none; border-radius: 4px; cursor: pointer;">🚀 Criar Ticket</button>
+            </div>
+            <div id="jira-submit-status" style="margin-top: 10px; font-weight: bold;"></div>
+        </div>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>

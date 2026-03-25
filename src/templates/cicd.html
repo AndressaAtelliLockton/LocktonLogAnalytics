@@ -1,0 +1,60 @@
+<div id="cicd-page" class="page-section" style="display: none;">
+    <div class="flex items-center gap-2 mb-6 mt-2">
+        <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-100">CI/CD & Pipelines</h2>
+        <div class="relative group cursor-pointer">
+            <i data-lucide="info" class="w-5 h-5 text-slate-400 hover:text-blue-500 transition-colors"></i>
+            <div class="absolute top-full left-0 mt-2 hidden group-hover:block p-4 bg-slate-800 text-white text-xs rounded-lg shadow-xl z-[100] pointer-events-none font-normal text-left leading-relaxed" style="width: max-content; max-width: 350px;">
+                <p class="mb-2"><strong class="text-blue-400">O que faz:</strong> Monitora o pipeline de integração e entrega contínua (CI/CD), extraindo métricas diretamente dos logs de build, teste e deploy.</p>
+                <p><strong class="text-blue-400">Dados apresentados:</strong></p>
+                <ul class="list-disc pl-4 mt-1 space-y-1">
+                    <li><strong>Métricas de Sucesso:</strong> Taxa de sucesso geral e status quantitativo de cada execução.</li>
+                    <li><strong>Performance:</strong> Tempo médio de duração isolado por estágio (Build, Test, Deploy, etc).</li>
+                    <li><strong>Histórico:</strong> Tabela contendo as execuções mais recentes com suas respectivas durações e mensagens.</li>
+                </ul>
+                <div class="absolute bottom-full left-2 border-4 border-transparent border-b-slate-800"></div>
+            </div>
+        </div>
+    </div>
+    <!-- KPIs -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6">
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+            <h4 class="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase">Total de Builds</h4>
+            <p id="cicd-kpi-total" class="text-3xl font-bold text-slate-800 dark:text-slate-100 mt-2">--</p>
+        </div>
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+            <h4 class="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase">Taxa de Sucesso</h4>
+            <p id="cicd-kpi-success-rate" class="text-3xl font-bold text-green-600 mt-2">--</p>
+        </div>
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+            <h4 class="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase">Duração Média</h4>
+            <p id="cicd-kpi-duration" class="text-3xl font-bold text-slate-800 dark:text-slate-100 mt-2">--</p>
+        </div>
+    </div>
+    <!-- Charts -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+            <h4 class="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-4">Status dos Builds</h4>
+            <div class="h-80 relative">
+                <canvas id="cicd-status-chart"></canvas>
+            </div>
+        </div>
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+            <h4 class="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-4">Duração Média por Estágio</h4>
+            <div class="h-80 relative">
+                <canvas id="cicd-duration-chart"></canvas>
+            </div>
+        </div>
+    </div>
+    <!-- Table -->
+    <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+        <h4 class="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-4">Builds Recentes</h4>
+        <div class="overflow-x-auto">
+            <table id="cicd-table" class="w-full text-sm text-left text-slate-600 dark:text-slate-300">
+                <thead class="text-xs text-slate-700 dark:text-slate-400 uppercase bg-slate-50 dark:bg-slate-700">
+                    <tr><th class="px-4 py-2">Timestamp</th><th class="px-4 py-2">Estágio</th><th class="px-4 py-2">Status</th><th class="px-4 py-2">Duração</th><th class="px-4 py-2">Mensagem</th></tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-700"></tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,42 @@
+<div id="alerts-page" class="page-section" style="display: none;">
+    <!-- Seção para Definições de Alerta -->
+    <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+        <h3 class="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-4">Definições de Alerta</h3>
+        <div class="overflow-x-auto">
+            <table id="alert-definitions-table" class="w-full text-sm text-left text-slate-600 dark:text-slate-300">
+                <thead class="text-xs text-slate-700 dark:text-slate-400 uppercase bg-slate-50 dark:bg-slate-700">
+                    <tr>
+                        <th scope="col" class="px-6 py-3">Título</th>
+                        <th scope="col" class="px-6 py-3">Descrição</th>
+                        <th scope="col" class="px-6 py-3">Prioridade</th>
+                        <th scope="col" class="px-6 py-3">Estado</th>
+                        <th scope="col" class="px-6 py-3">Ações</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    <!-- Linhas serão inseridas pelo JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Seção para Alertas Disparados -->
+    <div class="mt-6 bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+        <h3 class="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-4">Alertas Disparados Recentemente</h3>
+        <div class="overflow-x-auto">
+            <table id="triggered-alerts-table" class="w-full text-sm text-left text-slate-600 dark:text-slate-300">
+                <thead class="text-xs text-slate-700 dark:text-slate-400 uppercase bg-slate-50 dark:bg-slate-700">
+                    <tr>
+                        <th scope="col" class="px-6 py-3">Data</th>
+                        <th scope="col" class="px-6 py-3">Stream</th>
+                        <th scope="col" class="px-6 py-3">Condição</th>
+                        <th scope="col" class="px-6 py-3">Descrição</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    <!-- Linhas serão inseridas pelo JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

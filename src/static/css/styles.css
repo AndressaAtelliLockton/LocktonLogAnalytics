@@ -1,0 +1,432 @@
+:root {
+    --bg-color: #f4f7fc;
+    --sidebar-bg: #ffffff;
+    --card-bg: #ffffff;
+    --text-color: #333;
+    --primary-color: #00529b;
+    --border-color: #e0e0e0;
+    --input-bg: #ffffff;
+}
+
+body.dark-mode {
+    --bg-color: #1e1e1e;
+    --sidebar-bg: #252526;
+    --card-bg: #252526;
+    --text-color: #d4d4d4;
+    --primary-color: #4daafc; /* Azul mais claro para contraste */
+    --border-color: #3e3e42;
+    --input-bg: #333333;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+.container {
+    display: flex;
+    height: 100vh;
+}
+
+.sidebar {
+    width: 280px;
+    background-color: var(--sidebar-bg);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-header {
+    padding: 20px;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.sidebar-header h2 {
+    margin-top: 10px;
+    font-size: 1.2em;
+}
+
+.sidebar-content {
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.sidebar-content h3 {
+    font-size: 1em;
+    text-transform: uppercase;
+    color: #777;
+    margin-top: 0;
+}
+
+.data-source {
+    margin-bottom: 20px;
+}
+
+#load-graylog-btn, #upload-form button {
+    width: 100%;
+    padding: 10px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+#theme-toggle-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #444;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+#reset-filters-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #607d8b;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+#upload-form input {
+    width: 100%;
+    margin-bottom: 10px;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+}
+
+#loading-status {
+    margin-top: 15px;
+    font-size: 0.9em;
+}
+
+.main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.main-header {
+    padding: 10px 20px;
+    background-color: var(--card-bg);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.main-header nav a {
+    margin-right: 20px;
+    text-decoration: none;
+    color: var(--text-color);
+    font-weight: bold;
+    padding: 10px 0;
+}
+
+.main-header nav a.active {
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.card {
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.card h4 {
+    margin-top: 0;
+    font-size: 1em;
+    color: #555;
+    color: var(--text-color);
+}
+
+.card p {
+    font-size: 2em;
+    font-weight: bold;
+    margin: 10px 0 0 0;
+    color: var(--primary-color);
+}
+
+.chart-card {
+    grid-column: 1 / -1; /* Span full width */
+}
+
+/* --- Estilos da Página de Investigação --- */
+
+.filters-bar {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    background-color: var(--card-bg);
+    border-bottom: 1px solid var(--border-color);
+    align-items: flex-end;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.filter-group label {
+    font-size: 0.8em;
+    margin-bottom: 5px;
+    color: #666;
+    color: var(--text-color);
+}
+
+.filter-group select, .filter-group input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    min-width: 150px;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+}
+
+.search-group {
+    flex-grow: 1;
+    flex-direction: row;
+    align-items: center;
+}
+
+.search-group input {
+    flex-grow: 1;
+    margin-right: 10px;
+}
+
+.table-container {
+    padding: 20px;
+    overflow-x: auto;
+}
+
+#logs-table, #context-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+#logs-table th, #logs-table td, #context-table th, #context-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+#logs-table th, #context-table th {
+    background-color: var(--bg-color);
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+.pagination-controls {
+    padding: 10px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+}
+
+/* --- Estilos da Página de Inteligência --- */
+
+.anomalies-list {
+    list-style: none;
+    padding: 0;
+    max-height: 200px;
+    overflow-y: auto;
+}
+.anomalies-list li {
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+    color: #d32f2f;
+    font-size: 0.9em;
+}
+
+.ai-analysis-card {
+    background-color: var(--bg-color);
+    border-left: 4px solid var(--primary-color);
+    padding: 15px;
+    margin-top: 15px;
+    border-radius: 4px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+.ai-analysis-header {
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-size: 0.85em;
+    color: var(--text-color);
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+.ai-analysis-content {
+    font-family: monospace;
+    background: #fff;
+    padding: 10px;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    font-size: 0.9em;
+    line-height: 1.4;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+}
+
+/* --- Estilos da Página de Métricas --- */
+
+.sandbox-container, .save-metric-form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.sandbox-container input, .save-metric-form input {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+}
+
+#regex-results {
+    background: var(--bg-color);
+    padding: 10px;
+    border-radius: 4px;
+    min-height: 50px;
+}
+
+/* --- Botão de Exportação --- */
+#btn-export-csv {
+    padding: 8px 16px;
+    background-color: #4CAF50; /* Verde */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    height: 37px; /* Alinha com o botão de busca */
+    align-self: flex-end; /* Alinha na parte de baixo do flex-group */
+}
+
+/* --- Modal Styles --- */
+.modal {
+    display: none; 
+    position: fixed; 
+    z-index: 1000; 
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%; 
+    overflow: auto; 
+    background-color: rgba(0,0,0,0.5); 
+}
+
+.modal-content {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    margin: 5% auto; 
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; 
+    max-width: 900px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.close-modal {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-modal:hover,
+.close-modal:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#modal-log-content {
+    margin-top: 15px;
+    font-family: monospace;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    padding: 15px;
+    border-radius: 4px;
+    border: 1px solid #eee;
+    max-height: 70vh;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+#logs-table tbody tr {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#logs-table tbody tr:hover {
+    background-color: var(--bg-color);
+}
+
+/* --- Chat Styles --- */
+.chat-history {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: var(--bg-color);
+    border-radius: 4px;
+}
+
+.chat-message {
+    margin-bottom: 8px;
+    padding: 8px;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+.chat-message.user {
+    background-color: var(--primary-color);
+    color: white;
+    text-align: right;
+}
+
+.chat-message.assistant {
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+}
+
+.chat-input-area {
+    display: flex;
+    gap: 10px;
+}
+
+.jira-btn {
+    background-color: #0052cc; /* Azul Jira */
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+}

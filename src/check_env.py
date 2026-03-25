@@ -18,7 +18,12 @@ CRITICAL_VARS = [
     "GRAYLOG_USER",
     "GRAYLOG_PASSWORD",
     "TEAMS_WEBHOOK_URL",
-    "DASHBOARD_URL"
+    "DASHBOARD_URL",
+    "WATCHDOG_SOURCES", # Fontes para o Watchdog IA monitorar, separadas por vírgula. Ex: "servidor1,servidor2"
+    "INFLUXDB_URL",
+    "DOCKER_INFLUXDB_INIT_ADMIN_TOKEN",
+    "DOCKER_INFLUXDB_INIT_ORG",
+    "DOCKER_INFLUXDB_INIT_BUCKET"
 ]
 
 def main():
@@ -30,7 +35,7 @@ def main():
             print("⚠️  Biblioteca 'python-dotenv' não instalada. O arquivo .env não será lido automaticamente.")
             print("   Execute: pip install python-dotenv")
     else:
-        print("⚠️  Arquivo .env não encontrado (Verificando variáveis de sistema...)")
+        print("ℹ️  Arquivo .env não encontrado. Assumindo execução via Pipeline CI/CD ou Docker (Variáveis de Sistema).")
 
     missing_count = 0
     

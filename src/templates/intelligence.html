@@ -1,0 +1,88 @@
+<div id="intelligence-page" class="page-section" style="display: none;">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Previsão de Volume -->
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+            <div class="flex items-center gap-2 mb-1">
+                <h4 class="text-lg font-semibold text-slate-800 dark:text-slate-100">Previsão de Volume de Logs</h4>
+                <div class="relative group cursor-pointer">
+                    <i data-lucide="info" class="w-4 h-4 text-slate-400 hover:text-blue-500 transition-colors"></i>
+                    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-2.5 bg-slate-800 text-white text-xs rounded shadow-lg z-[100] pointer-events-none font-normal text-center leading-relaxed">
+                        Aplica modelos estatísticos em cima do histórico de logs para prever a tendência futura do volume tráfego, ajudando a antecipar sobrecargas na infraestrutura.
+                        <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800"></div>
+                    </div>
+                </div>
+            </div>
+            <p id="forecast-trend" class="text-sm text-slate-500 dark:text-slate-400 mb-4">Tendência: --</p>
+            <div class="h-72 relative">
+                <canvas id="forecast-chart"></canvas>
+            </div>
+        </div>
+
+        <!-- Detecção de Anomalias -->
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+            <div class="flex items-center gap-2 mb-4">
+                <h4 class="text-lg font-semibold text-slate-800 dark:text-slate-100">Detecção de Anomalias</h4>
+                <div class="relative group cursor-pointer">
+                    <i data-lucide="info" class="w-4 h-4 text-slate-400 hover:text-blue-500 transition-colors"></i>
+                    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-2.5 bg-slate-800 text-white text-xs rounded shadow-lg z-[100] pointer-events-none font-normal text-center leading-relaxed">
+                        Identifica automaticamente, via desvio padrão, picos ou quedas bruscas no volume de logs que fogem drasticamente do comportamento natural do sistema.
+                        <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800"></div>
+                    </div>
+                </div>
+            </div>
+            <ul id="anomalies-list" class="space-y-2 text-sm text-slate-600 dark:text-slate-300 max-h-72 overflow-y-auto">
+                <li class="text-slate-400">Carregando...</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Análise de Segurança -->
+    <div class="mt-6 bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+        <div class="flex items-center gap-2 mb-4">
+            <h4 class="text-lg font-semibold text-slate-800 dark:text-slate-100">Análise de Segurança (IPs Suspeitos)</h4>
+            <div class="relative group cursor-pointer">
+                <i data-lucide="info" class="w-4 h-4 text-slate-400 hover:text-blue-500 transition-colors"></i>
+                <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-2.5 bg-slate-800 text-white text-xs rounded shadow-lg z-[100] pointer-events-none font-normal text-center leading-relaxed">
+                    Lista endereços de IP extraídos dos logs que estão diretamente atrelados a uma alta taxa de falhas e erros de conexão.
+                    <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800"></div>
+                </div>
+            </div>
+        </div>
+        <div class="overflow-x-auto">
+            <table id="security-table" class="w-full text-sm text-left text-slate-600 dark:text-slate-300">
+                <thead class="text-xs text-slate-700 dark:text-slate-400 uppercase bg-slate-50 dark:bg-slate-700">
+                    <tr>
+                        <th class="px-4 py-2">IP</th>
+                        <th class="px-4 py-2">Status</th>
+                        <th class="px-4 py-2">Total de Logs</th>
+                        <th class="px-4 py-2">Taxa de Erro</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
+                    <tr><td colspan="4" class="text-center py-4 text-slate-500">Carregando...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Análise com IA -->
+    <div class="mt-6 bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+        <div class="flex justify-between items-center mb-4">
+            <div class="flex items-center gap-2">
+                <h4 class="text-lg font-semibold text-slate-800 dark:text-slate-100">Análise com IA</h4>
+                <div class="relative group cursor-pointer">
+                    <i data-lucide="info" class="w-4 h-4 text-slate-400 hover:text-blue-500 transition-colors"></i>
+                    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-2.5 bg-slate-800 text-white text-xs rounded shadow-lg z-[100] pointer-events-none font-normal text-center leading-relaxed">
+                        A Inteligência Artificial lê automaticamente os 3 logs críticos mais recentes e tenta sugerir correções de código, comandos ou configurações baseadas no conteúdo do erro.
+                        <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800"></div>
+                    </div>
+                </div>
+            </div>
+            <button id="run-ai-btn" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors">Executar Análise</button>
+        </div>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">A IA irá analisar 3 logs de erro mais recentes e sugerir criação de ticket no Jira.</p>
+        <div id="ai-results-container" class="space-y-4">
+            <!-- Resultados da IA serão inseridos aqui -->
+        </div>
+    </div>
+</div>

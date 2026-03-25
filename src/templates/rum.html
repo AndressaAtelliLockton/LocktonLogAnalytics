@@ -1,0 +1,32 @@
+<div id="rum-page" class="page-section" style="display: none;">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <!-- Core Web Vitals -->
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+            <h4 class="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-4">Core Web Vitals (Média)</h4>
+            <div class="h-80 relative">
+                <canvas id="rum-vitals-chart"></canvas>
+            </div>
+        </div>
+
+        <!-- Top Erros JS -->
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+            <h4 class="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-4">Top Erros JavaScript</h4>
+            <div class="h-80 relative">
+                <canvas id="rum-errors-chart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabela de Detalhes de Erros -->
+    <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+        <h4 class="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-4">Detalhes dos Erros Recentes</h4>
+        <div class="overflow-x-auto">
+            <table id="rum-errors-table" class="w-full text-sm text-left text-slate-600 dark:text-slate-300">
+                <thead class="text-xs text-slate-700 dark:text-slate-400 uppercase bg-slate-50 dark:bg-slate-700">
+                    <tr><th class="px-4 py-2">Timestamp</th><th class="px-4 py-2">Tipo do Erro</th><th class="px-4 py-2">Detalhes</th></tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-700"></tbody>
+            </table>
+        </div>
+    </div>
+</div>

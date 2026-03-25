@@ -3,10 +3,10 @@ import pandas as pd
 import sys
 import os
 
-# Adiciona o diretório raiz ao path para garantir que imports funcionem
-sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+# Adiciona o diretório 'src' ao path para que o pacote log_analyzer_lib seja encontrável
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from log_analyzer import database as db
+from log_analyzer_lib import database as db
 
 class TestDatabaseMemory(unittest.TestCase):
     

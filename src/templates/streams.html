@@ -1,0 +1,24 @@
+<div id="streams-page" class="page-section" style="display: none;">
+    <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+        <h3 class="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-4">Status das Streams</h3>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">
+            Streams são fluxos de mensagens roteadas no Graylog. Esta página mostra as streams ativas e seu throughput (mensagens por segundo), ordenadas pela mais ativa.
+        </p>
+        <div class="overflow-x-auto">
+            <table id="streams-table" class="w-full text-sm text-left text-slate-600 dark:text-slate-300">
+                <thead class="text-xs text-slate-700 dark:text-slate-400 uppercase bg-slate-50 dark:bg-slate-700">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 w-8"></th>
+                        <th scope="col" class="px-6 py-3">Título</th>
+                        <th scope="col" class="px-6 py-3">Descrição</th>
+                        <th scope="col" class="px-6 py-3">Status</th>
+                        <th scope="col" class="px-6 py-3">Throughput</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    <!-- Linhas serão inseridas pelo JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

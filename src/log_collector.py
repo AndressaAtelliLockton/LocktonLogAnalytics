@@ -13,11 +13,17 @@ from influxdb_client.client.write_api import SYNCHRONOUS
 # --- Configuration ---
 load_dotenv()
 
-# AJUSTE: No Docker Swarm, usamos o nome do serviço definido na pipeline
-INFLUXDB_URL = os.getenv("INFLUXDB_URL", "http://influxdb-staging:8086")
+# As configurações do InfluxDB são lidas exclusivamente das variáveis de ambiente.
+# Isso torna a configuração explícita e evita comportamentos inesperados.
+INFLUXDB_URL = os.getenv("INFLUXDB_URL")
 INFLUXDB_TOKEN = os.getenv("DOCKER_INFLUXDB_INIT_ADMIN_TOKEN")
 INFLUXDB_ORG = os.getenv("DOCKER_INFLUXDB_INIT_ORG")
 INFLUXDB_BUCKET = os.getenv("DOCKER_INFLUXDB_INIT_BUCKET")
+
+# Validação inicial para falhar rapidamente se a configuração estiver ausente
+if not all([INFLUXDB_URL, INFLUXDB_TOKEN, INFLUXDB_ORG, INFLUXDB_BUCKET]):
+    print("❌ ERRO CRÍTICO: As variáveis de ambiente do InfluxDB (URL, TOKEN, ORG, BUCKET) não estão configuradas. Verifique seu .env ou as variáveis da pipeline.")
+    exit(1)
 
 LOG_FILE_PATH = "app.log"
 
@@ -52,7 +58,6 @@ def parse_log_line(line):
 
 # --- Main Application ---
 def main():
-    global INFLUXDB_URL
     print(f"Starting log collector connecting to {INFLUXDB_URL}...")
 
     if not os.path.exists(LOG_FILE_PATH):
@@ -81,14 +86,6 @@ def main():
                 except Exception as e:
                     str_e = str(e)
 
-                    # 1. Auto-fallback para localhost se estiver rodando fora do Docker (Erro de DNS)
-                    if "influxdb-staging" in INFLUXDB_URL and ("getaddrinfo failed" in str_e or "Name or service not known" in str_e or "Errno -2" in str_e):
-                        print("⚠️ Host 'influxdb-staging' não encontrado. Tentando 'localhost:8086' para desenvolvimento local...")
-                        INFLUXDB_URL = "http://localhost:8086"
-                        client = None
-                        time.sleep(1)
-                        continue
-
                     # Se falhar no localhost (desenvolvimento sem InfluxDB), avisa e aguarda mais tempo
                     # Verifica isso ANTES de imprimir o erro genérico para evitar spam
                     if ("localhost" in INFLUXDB_URL or "127.0.0.1" in INFLUXDB_URL) and ("10061" in str_e or "Connection refused" in str_e):
@@ -96,7 +93,7 @@ def main():
                         time.sleep(60)
                         continue
 
-                    print(f"❌ Connection error: {e}. Retrying in 5s...")
+                    print(f"❌ Erro de conexão com o InfluxDB: {e}. Tentando novamente em 15s...")
 
                     client = None
                     time.sleep(5)

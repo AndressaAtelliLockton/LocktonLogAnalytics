@@ -29,7 +29,8 @@ logger = logging.getLogger("Scheduler")
 # Handler para salvar dados ao encerrar o container (SIGTERM/SIGINT)
 def shutdown_handler(signum, frame):
     logger.info(f"Recebido sinal de parada ({signum}). Salvando dados em disco...")
-    lam.save_to_disk()
+    if hasattr(lam, "save_to_disk"):
+        lam.save_to_disk()
     logger.info("Dados salvos. Encerrando Scheduler.")
     sys.exit(0)
 
@@ -51,7 +52,8 @@ def run_scheduler():
     while True:
         try:
             # Recarrega configurações do disco para pegar atualizações da UI (ex: Webhook URL)
-            lam.load_from_disk()
+            if hasattr(lam, "load_from_disk"):
+                lam.load_from_disk()
             
             agora = datetime.now()
             logger.info("Iniciando Ciclo de Rastreamento (Watchdog Global)...")
@@ -68,22 +70,19 @@ def run_scheduler():
 
             # 1.1 ENVIO PARA GRAYLOG (Input MetricasHardware - UDP 12201)
             # Envia as métricas coletadas para o input GELF configurado no Graylog
-            # Ajuste: Usa o host configurado na API URL ou fallback seguro
-            api_url_env = lam.get_setting("GRAYLOG_API_URL", "")
-            gl_host = lam.get_host_from_url(api_url_env) if api_url_env else "graylog.lockton.com.br"
+            url = os.getenv("GRAYLOG_API_URL")
+            gl_host = lam.get_host_from_url(url) if url else "graylog.lockton.com.br"
             port = 12201
 
             logger.debug(f"Tentando conexão UDP para {gl_host}:{port}...")
             lam.send_gelf_message(gl_host, port, infra_msg, extra_fields={"cpu": cpu, "memory": mem, "disk": dsk}, source_name="Local-Agent")
 
             # 2. LOGS & IA WATCHDOG
-            # Ajuste: Chaves atualizadas para coincidir com Variáveis de Ambiente (DB removido)
-            # Tenta chaves de ambiente (UPPER) e chaves salvas pela UI (lower)
-            url = lam.get_setting("GRAYLOG_API_URL") or lam.get_setting("graylog_url")
-            user = lam.get_setting("GRAYLOG_USER") or lam.get_setting("graylog_user")
-            password = lam.get_setting("GRAYLOG_PASSWORD") or lam.get_setting("graylog_pass") or "token"
-            webhook_url = lam.get_setting("TEAMS_WEBHOOK_URL") or lam.get_setting("webhook_url")
-            dash_url = lam.get_setting("DASHBOARD_URL") or lam.get_setting("dashboard_url") or "http://localhost:8502"
+            # As configurações são lidas diretamente das variáveis de ambiente.
+            user = os.getenv("GRAYLOG_USER")
+            password = os.getenv("GRAYLOG_PASSWORD", "token") # Default para "token"
+            webhook_url = os.getenv("TEAMS_WEBHOOK_URL")
+            dash_url = os.getenv("DASHBOARD_URL", "http://localhost:8502")
             
             if not webhook_url:
                 logger.warning("Aviso: URL do Webhook não configurada. Alertas não serão enviados.")
@@ -122,16 +121,33 @@ def run_scheduler():
 
             # 2.1 WATCHDOG DE ERROS
             # Monitora erros críticos e inclui metadados de container/graylog
-            # Query global: Captura erros de TODAS as origens (incluindo swarm2, swarm4)
-            # Critério: Nível de log baixo (0-4) OU palavras-chave de erro na mensagem
-            query_watchdog = "(message:\"Error\" OR message:\"Fail\" OR message:\"Critical\" OR message:\"Fatal\" OR message:\"Exception\" OR level:[0 TO 4])"
+            # Query global: Captura erros apenas de locksp-swarm2 e locksp-swarm4
+            # Critério: Nível de log baixo (0-4) OU palavras-chave de erro na mensagem, em fontes configuradas.
+            
+            # Melhoria: Fontes (sources) monitoradas são agora configuráveis via variável de ambiente.
+            # Ex: WATCHDOG_SOURCES="locksp-swarm2,locksp-swarm4,outro-servidor"
+            # UPDATE: Garante que locksp-swarm2 e locksp-swarm4 estejam sempre incluídos, unindo com a ENV se existir.
+            env_sources = os.getenv("WATCHDOG_SOURCES", "")
+            mandatory_sources = ["locksp-swarm2", "locksp-swarm4"]
+            
+            sources_set = set(mandatory_sources)
+            if env_sources:
+                sources_set.update([s.strip() for s in env_sources.split(',') if s.strip()])
+            
+            if sources_set:
+                sources_list = list(sources_set)
+                source_query_part = " OR ".join([f'source:"{s}"' for s in sources_list])
+                query_watchdog = f'(message:"Error" OR message:"Fail" OR message:"Critical" OR message:"Fatal" OR message:"Exception" OR level:[0 TO 4]) AND ({source_query_part})'
+            else:
+                # Fallback: se nenhuma fonte for definida, o watchdog não roda para evitar buscar em "*".
+                query_watchdog = None
             
             # Solicita campos explícitos para garantir que a tabela do alerta tenha todas as colunas formatadas igual ao teste
-            if url:
+            if url and query_watchdog:
                 df_watchdog_raw, err = lam.fetch_logs_from_graylog(url, user, password, query=query_watchdog, relative=300, fields="timestamp,source,message,level,LogLevel,container_id,container_name,image_id,image_name,command,created,gl2_processing_error,tag,RequestPath,cpu_valor,mem_valor")
             else:
-                df_watchdog_raw, err = None, "URL não configurada"
-                logger.info("Watchdog ignorado (URL do Graylog não configurada).")
+                df_watchdog_raw, err = None, "URL do Graylog não configurada ou fontes do Watchdog não definidas."
+                logger.info("Watchdog ignorado: " + err)
             
             if err:
                 if url: # Só loga erro se a URL existir mas falhar
@@ -166,7 +182,10 @@ def run_scheduler():
                     latest_err = df_watchdog.iloc[0]
                     
                     # Formata tabela com campos específicos do container/graylog
-                    corpo_tabela = lam.format_graylog_table(latest_err)
+                    if hasattr(lam, "format_graylog_table"):
+                        corpo_tabela = lam.format_graylog_table(latest_err)
+                    else:
+                        corpo_tabela = f"**Erro:** {latest_err.get('message', 'N/A')}\n\n(Tabela detalhada indisponível - log_analyzer desatualizado)"
                     
                     # Análise IA
                     prompt_ia = f"Resuma este erro e sugira uma solução técnica breve: {latest_err['message']}"

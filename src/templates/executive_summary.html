@@ -1,0 +1,54 @@
+<div id="executive-summary" class="page-section active">
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-6">
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+            <h4 class="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase">Total de Logs</h4>
+            <p id="kpi-total-logs" class="text-3xl font-bold text-slate-800 dark:text-slate-100 mt-2">--</p>
+        </div>
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+            <h4 class="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase">Contagem de Erros</h4>
+            <p id="kpi-error-count" class="text-3xl font-bold text-red-600 mt-2">--</p>
+        </div>
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+            <h4 class="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase">Taxa de Erro</h4>
+            <p id="kpi-error-rate" class="text-3xl font-bold text-slate-800 dark:text-slate-100 mt-2">--</p>
+        </div>
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+            <h4 class="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase">Sistemas Únicos</h4>
+            <p id="kpi-unique-sources" class="text-3xl font-bold text-slate-800 dark:text-slate-100 mt-2">--</p>
+        </div>
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+            <h4 class="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase">Latência Média API</h4>
+            <p id="kpi-avg-latency" class="text-3xl font-bold text-slate-800 dark:text-slate-100 mt-2">--</p>
+        </div>
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border-slate-200 dark:border-slate-700">
+            <div class="flex items-center gap-2 mb-4">
+                <h4 class="text-lg font-semibold text-slate-800 dark:text-slate-100">Volume de Logs ao Longo do Tempo</h4>
+                <div class="relative group cursor-pointer">
+                    <i data-lucide="info" class="w-4 h-4 text-slate-400 hover:text-blue-500 transition-colors"></i>
+                    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-2.5 bg-slate-800 text-white text-xs rounded shadow-lg z-[100] pointer-events-none font-normal text-center leading-relaxed">
+                        Mostra a quantidade de logs gerados no intervalo de tempo selecionado. Útil para identificar picos de tráfego.
+                        <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="h-80 relative">
+                <canvas id="volume-chart"></canvas>
+            </div>
+        </div>
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border-slate-200 dark:border-slate-700">
+            <div class="flex items-center gap-2 mb-4">
+                <h4 class="text-lg font-semibold text-slate-800 dark:text-slate-100">Top 5 Endpoints Mais Lentos (P95)</h4>
+                <div class="relative group cursor-pointer">
+                    <i data-lucide="info" class="w-4 h-4 text-slate-400 hover:text-blue-500 transition-colors"></i>
+                    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-2.5 bg-slate-800 text-white text-xs rounded shadow-lg z-[100] pointer-events-none font-normal text-center leading-relaxed">
+                        Lista as rotas de API mais lentas. A métrica P95 indica que 95% das requisições foram mais rápidas que o tempo exibido (descartando pontos muito anormais).
+                        <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800"></div>
+                    </div>
+                </div>
+            </div>
+            <ul id="slowest-endpoints-list" class="space-y-3 text-sm text-slate-600 dark:text-slate-300"></ul>
+        </div>
+    </div>
+</div>
